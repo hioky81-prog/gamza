@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>감자 마켓 - 내 물건 팔기</title>
+  <!-- Pretendard 웹 폰트 (Seed Design 표준 폰트) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+  <style>
+    /* ==========================================================================
+       SEED DESIGN SYSTEM 파운데이션 토큰 (seed-design.io)
+       ========================================================================== */
+    :root {
+      --gamza-primary: #ff6600;        /* SEED Carrot 오렌지 */
+      --gamza-primary-dark: #e14d00;   /* SEED Brand Solid Pressed */
+      --gamza-primary-light: #ff9364;  /* SEED Carrot-500 */
+      --gamza-bg: #f7f8f9;             /* SEED Layer Basement */
+      --gamza-card-bg: #ffffff;        /* SEED Layer Default (White) */
+      --gamza-accent-bg: #f3f4f5;      /* SEED Neutral Weak */
+      --gamza-accent-gold: #ff6600;
+      --gamza-border: #eeeff1;         /* SEED Stroke Neutral Weak */
+      --gamza-border-focus: #ff6600;   /* SEED Focus Ring */
+
+      /* SEED Brand Point */
+      --point-yellow: #ff6600;
+      --point-yellow-hover: #e14d00;
+      --point-yellow-active: #b93901;
+      --point-yellow-light: #fff2ec;
+      --point-yellow-border: #ffd5c0;
+      --text-on-yellow: #ffffff;
+      --shadow-yellow: 0 4px 14px rgba(255, 102, 0, 0.28);
+      --shadow-yellow-hover: 0 6px 20px rgba(255, 102, 0, 0.38);
+      
+      --text-primary: #1a1c20;         /* SEED FG Neutral (Gray-1000) */
+      --text-secondary: #868b94;       /* SEED FG Neutral Muted */
+      --text-muted: #b0b3ba;           /* SEED FG Neutral Subtle */
+      --text-light: #ffffff;
+      
+      --status-selling: #079171;       /* SEED Positive */
+      --status-reserved: #9b7821;      /* SEED Warning */
+      --status-completed: #868b94;     /* SEED Neutral */
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--gamza-bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* 상단 네비게이션 바 (단독 실행 데모용) */
+    .demo-navbar {
+      background: var(--gamza-card-bg);
+      border-bottom: 1px solid var(--gamza-border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gamza-primary-dark);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .brand-potato-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+      display: inline-block;
+      animation: gentle-wobble 2.5s infinite ease-in-out;
+    }
+
+    @keyframes gentle-wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+
+    .open-write-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--gamza-primary);
+      color: var(--text-light);
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .open-write-btn:hover {
+      background-color: var(--gamza-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* 단독 화면 페이지 컨테이너 */
+    .page-container {
+      max-width: 720px;
+      width: 100%;
+      margin: 28px auto 60px;
+      padding: 0 16px;
+      flex: 1;
+    }
+
+    .page-intro-card {
+      background: linear-gradient(135deg, var(--gamza-accent-bg) 0%, #FFFFFF 100%);
+      border: 1px solid var(--gamza-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-intro-text h2 {
+      font-size: 1.15rem;
+      color: var(--gamza-primary-dark);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-intro-text p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       모달 & 폼 컴포넌트 (독립 컴포넌트로 다른 화면에 임베드 가능)
+       ========================================================================== */
+    .gamza-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(45, 30, 24, 0.45);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      padding: 20px;
+    }
+
+    .gamza-modal-backdrop.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .gamza-write-modal {
+      background: var(--gamza-card-bg);
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--gamza-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gamza-modal-backdrop.is-active .gamza-write-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    /* 모달 헤더 */
+    .gamza-modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--gamza-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--gamza-bg);
+    }
+
+    .gamza-modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gamza-primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gamza-close-btn {
+      background: transparent;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 1.3rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .gamza-close-btn:hover {
+      background-color: var(--gamza-accent-bg);
+      color: var(--gamza-primary-dark);
+    }
+
+    /* 폼 스크롤 영역 */
+    .gamza-modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* 폼 필드 그룹 */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label .required-dot {
+      color: #D32F2F;
+      margin-left: 2px;
+    }
+
+    .form-label .label-tip {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* 1. 이미지 업로드/미리보기 컴포넌트 */
+    .image-upload-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .image-preview-area {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .image-upload-box {
+      width: 130px;
+      height: 130px;
+      border: 2px dashed var(--gamza-primary-light);
+      background-color: var(--gamza-bg);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--gamza-primary);
+      text-align: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .image-upload-box:hover {
+      border-color: var(--gamza-primary);
+      background-color: var(--gamza-accent-bg);
+    }
+
+    .image-upload-box input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .image-upload-box svg {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 4px;
+      fill: currentColor;
+    }
+
+    .image-upload-box span {
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .image-preview-card {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--gamza-border);
+      box-shadow: var(--shadow-sm);
+      display: none;
+      background-color: #f0f0f0;
+    }
+
+    .image-preview-card.has-image {
+      display: block;
+    }
+
+    .image-preview-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-image-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(45, 30, 24, 0.7);
+      color: #fff;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+
+    .remove-image-btn:hover {
+      background: #D32F2F;
+    }
+
+    .image-url-toggle-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .image-url-input {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid var(--gamza-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      outline: none;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    .image-url-input:focus {
+      border-color: var(--gamza-border-focus);
+    }
+
+    .image-url-btn {
+      background: var(--gamza-accent-bg);
+      color: var(--gamza-primary-dark);
+      border: 1px solid var(--gamza-border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .image-url-btn:hover {
+      background: #ECE0D8;
+    }
+
+    /* 공통 텍스트/숫자/셀렉트 입력 필드 */
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gamza-border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      background-color: #FFFFFF;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--point-yellow);
+      box-shadow: 0 0 0 3px rgba(255, 206, 0, 0.28);
+    }
+
+    .form-input::placeholder, .form-textarea::placeholder {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* 가격 입력 필드 특화 */
+    .price-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .price-unit {
+      position: absolute;
+      right: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .price-options {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      accent-color: var(--gamza-primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* 동네 입력 및 빠른 태그 */
+    .location-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .location-pill {
+      font-size: 0.78rem;
+      background-color: var(--gamza-accent-bg);
+      color: var(--gamza-primary-dark);
+      border: 1px solid var(--gamza-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .location-pill:hover {
+      background-color: var(--gamza-primary);
+      color: #fff;
+    }
+
+    /* 판매 상태 라디오 버튼 (세그먼트 컨트롤) */
+    .status-segment-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--gamza-accent-bg);
+      padding: 5px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gamza-border);
+    }
+
+    .status-radio-item {
+      position: relative;
+    }
+
+    .status-radio-item input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .status-radio-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: transparent;
+      user-select: none;
+    }
+
+    .status-radio-item input[type="radio"]:checked + .status-radio-label {
+      background: #FFFFFF;
+      color: var(--gamza-primary-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    /* 자세한 설명 텍스트에어리어 */
+    .form-textarea {
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.6;
+    }
+
+    .textarea-counter {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* 모달 푸터 버튼 영역 */
+    .gamza-modal-footer {
+      padding: 16px 24px;
+      background-color: var(--gamza-bg);
+      border-top: 1px solid var(--gamza-border);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--gamza-border);
+      color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--gamza-accent-bg);
+      color: var(--text-primary);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #FFE15A 0%, var(--point-yellow) 100%);
+      border: 1px solid rgba(220, 160, 0, 0.25);
+      color: var(--text-on-yellow);
+      font-weight: 800;
+      box-shadow: var(--shadow-yellow);
+      min-width: 120px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #FFE66D 0%, var(--point-yellow-hover) 100%);
+      color: #1A110D;
+      box-shadow: var(--shadow-yellow-hover);
+      transform: translateY(-1.5px);
+    }
+
+    .btn-primary:disabled {
+      background: #E8DDD6;
+      border-color: #DDD1C8;
+      color: #A49890;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* 등록 완료 후 확인용 결과 카드 (데모용) */
+    .result-section {
+      margin-top: 28px;
+      background: var(--gamza-card-bg);
+      border: 1px solid var(--gamza-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--gamza-border);
+      padding-bottom: 10px;
+    }
+
+    .result-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gamza-primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .product-preview-card {
+      display: flex;
+      gap: 16px;
+      background: var(--gamza-bg);
+      border: 1px solid var(--gamza-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .product-preview-thumb {
+      width: 110px;
+      height: 110px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background-color: #eee;
+      flex-shrink: 0;
+    }
+
+    .product-preview-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .preview-badge-status {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background-color: var(--gamza-accent-bg);
+      color: var(--gamza-primary-dark);
+      align-self: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .preview-product-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .preview-product-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .preview-product-price {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gamza-primary-dark);
+    }
+
+    /* 토스트 알림 메시지 */
+    .gamza-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(45, 30, 24, 0.92);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      font-size: 0.95rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .gamza-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* 반응형 스타일 */
+    @media (max-width: 600px) {
+      .gamza-write-modal {
+        max-height: 96vh;
+        border-radius: var(--radius-md);
+      }
+      .gamza-modal-body {
+        padding: 16px;
+        gap: 18px;
+      }
+      .gamza-modal-header, .gamza-modal-footer {
+        padding: 14px 16px;
+      }
+      .status-segment-group {
+        grid-template-columns: 1fr;
+      }
+      .product-preview-card {
+        flex-direction: column;
+      }
+      .product-preview-thumb {
+        width: 100%;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 네비게이션 데모 바 -->
+  <header class="demo-navbar">
+    <a href="#" class="brand-logo">
+      <span class="brand-potato-icon">🥔</span>
+      <span>감자 마켓</span>
+    </a>
+    <button type="button" class="open-write-btn" id="headerWriteBtn">
+      <span>✏️</span> 내 물건 팔기
+    </button>
+  </header>
+
+  <!-- 메인 데모 페이지 컨테이너 -->
+  <main class="page-container">
+    <div class="page-intro-card">
+      <div class="page-intro-text">
+        <h2>🥔 감자마켓 글쓰기 컴포넌트</h2>
+        <p>우리 동네 이웃과 따뜻하고 믿을 수 있는 중고 물품을 거래해보세요.</p>
+      </div>
+      <button type="button" class="btn btn-primary" id="pageOpenWriteBtn">
+        + 글쓰기 열기
+      </button>
+    </div>
+
+    <!-- 최근 등록된 상품 결과 (이벤트 수신 확인 데모용) -->
+    <section class="result-section" id="resultSection">
+      <div class="result-header">
+        <h3 class="result-title">
+          <span>📦</span> 최근 등록된 상품 미리보기
+        </h3>
+        <span style="font-size: 0.82rem; color: var(--text-muted);" id="resultTimestamp">대기 중</span>
+      </div>
+
+      <div id="productDisplayArea">
+        <div class="product-preview-card" id="demoProductCard">
+          <img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=300&q=80" alt="기본 샘플" class="product-preview-thumb" id="demoProductImg">
+          <div class="product-preview-info">
+            <div>
+              <span class="preview-badge-status" id="demoProductStatus">판매중</span>
+              <h4 class="preview-product-title" id="demoProductTitle">닌텐도 스위치 OLED 풀박스 (샘플)</h4>
+              <p class="preview-product-meta" id="demoProductMeta">디지털기기 • 역삼1동 • 방금 전</p>
+            </div>
+            <div class="preview-product-price" id="demoProductPrice">280,000원</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JSON 객체 뷰어 (연동 개발자 편의 기능) -->
+      <details style="margin-top: 16px;">
+        <summary style="font-size: 0.85rem; color: var(--gamza-primary); cursor: pointer; font-weight: 600;">
+          생성된 상품 데이터 (JSON) 확인하기
+        </summary>
+        <pre id="jsonPreviewArea" style="margin-top: 8px; background: #27211E; color: #E8DDD6; padding: 12px; border-radius: 8px; font-size: 0.8rem; overflow-x: auto; line-height: 1.4;"></pre>
+      </details>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       [화면 3: 글쓰기 모달 컴포넌트]
+       ========================================================================== -->
+  <div class="gamza-modal-backdrop" id="gamzaWriteModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="gamza-write-modal">
+      
+      <!-- 모달 헤더 -->
+      <div class="gamza-modal-header">
+        <h2 class="gamza-modal-title" id="modalTitle">내 물건 팔기</h2>
+        <button type="button" class="gamza-close-btn" id="modalCloseXBtn" aria-label="닫기">
+          &times;
+        </button>
+      </div>
+
+      <!-- 모달 폼 바디 -->
+      <form id="gamzaProductForm" class="gamza-modal-body" novalidate>
+        
+        <!-- 1. 상품 이미지 -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>상품 이미지 <span class="required-dot">*</span></span>
+            <span class="label-tip">파일 첨부 또는 이미지 URL 입력</span>
+          </label>
+          <div class="image-upload-wrapper">
+            <div class="image-preview-area">
+              <!-- 파일 업로드 드롭 박스 -->
+              <label class="image-upload-box" id="imageUploadBox">
+                <input type="file" id="productImageFile" accept="image/*" aria-label="상품 이미지 파일 선택">
+                <svg viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                <span>사진 올리기</span>
+              </label>
+
+              <!-- 이미지 미리보기 박스 -->
+              <div class="image-preview-card" id="imagePreviewCard">
+                <img id="previewImgElement" src="" alt="상품 이미지 미리보기">
+                <button type="button" class="remove-image-btn" id="removeImageBtn" title="이미지 삭제">&times;</button>
+              </div>
+            </div>
+
+            <!-- 이미지 URL 직접 입력 보조바 -->
+            <div class="image-url-toggle-bar">
+              <input type="url" class="image-url-input" id="productImageUrl" placeholder="또는 웹 이미지 URL (https://...) 붙여넣기">
+              <button type="button" class="image-url-btn" id="applyUrlBtn">URL 적용</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 상품명 -->
+        <div class="form-group">
+          <label class="form-label" for="productTitle">
+            <span>글 제목 (상품명) <span class="required-dot">*</span></span>
+            <span class="label-tip" id="titleCharCount">0/40</span>
+          </label>
+          <input type="text" id="productTitle" class="form-input" placeholder="상품명을 입력해주세요" maxlength="40" required>
+        </div>
+
+        <!-- 3. 카테고리 -->
+        <div class="form-group">
+          <label class="form-label" for="productCategory">
+            <span>카테고리 <span class="required-dot">*</span></span>
+          </label>
+          <select id="productCategory" class="form-select" required>
+            <option value="" disabled selected>카테고리를 선택해주세요</option>
+            <option value="디지털기기">디지털기기</option>
+            <option value="가구/인테리어">가구/인테리어</option>
+            <option value="의류">의류</option>
+            <option value="생활가전">생활가전</option>
+            <option value="도서/티켓">도서/티켓</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+
+        <!-- 4. 가격 -->
+        <div class="form-group">
+          <label class="form-label" for="productPrice">
+            <span>판매 가격 <span class="required-dot">*</span></span>
+          </label>
+          <div class="price-input-wrapper">
+            <input type="text" id="productPrice" class="form-input" inputmode="numeric" placeholder="가격을 입력해주세요 (숫자만)" required>
+            <span class="price-unit">원</span>
+          </div>
+          <div class="price-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="isFreeShare">
+              <span>🥔 따뜻한 나눔하기 (무료나눔)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5. 거래 동네 -->
+        <div class="form-group">
+          <label class="form-label" for="productLocation">
+            <span>거래 희망 동네 <span class="required-dot">*</span></span>
+            <span class="label-tip">직거래를 선호하는 위치</span>
+          </label>
+          <input type="text" id="productLocation" class="form-input" placeholder="예: 역삼1동" value="역삼1동" required>
+          <div class="location-tags">
+            <span class="location-pill" data-loc="역삼1동">#역삼1동</span>
+            <span class="location-pill" data-loc="서초2동">#서초2동</span>
+            <span class="location-pill" data-loc="논현동">#논현동</span>
+            <span class="location-pill" data-loc="신사동">#신사동</span>
+            <span class="location-pill" data-loc="대치2동">#대치2동</span>
+          </div>
+        </div>
+
+        <!-- 6. 판매 상태 -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>판매 상태 <span class="required-dot">*</span></span>
+          </label>
+          <div class="status-segment-group">
+            <div class="status-radio-item">
+              <input type="radio" id="statusSelling" name="productStatus" value="판매중" checked>
+              <label for="statusSelling" class="status-radio-label">
+                <span class="status-dot" style="color: var(--status-selling);"></span>
+                <span>판매중</span>
+              </label>
+            </div>
+            <div class="status-radio-item">
+              <input type="radio" id="statusReserved" name="productStatus" value="예약중">
+              <label for="statusReserved" class="status-radio-label">
+                <span class="status-dot" style="color: var(--status-reserved);"></span>
+                <span>예약중</span>
+              </label>
+            </div>
+            <div class="status-radio-item">
+              <input type="radio" id="statusCompleted" name="productStatus" value="거래 완료">
+              <label for="statusCompleted" class="status-radio-label">
+                <span class="status-dot" style="color: var(--status-completed);"></span>
+                <span>거래 완료</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. 자세한 설명 -->
+        <div class="form-group">
+          <label class="form-label" for="productDescription">
+            <span>자세한 설명</span>
+            <span class="label-tip" id="descCharCount">0/500</span>
+          </label>
+          <textarea id="productDescription" class="form-textarea" maxlength="500" placeholder="역삼1동에 올릴 게시글 내용을 작성해주세요.
+(판매 금지 물품은 게시가 제한될 수 있어요)
+
+신뢰할 수 있는 감자마켓 거래를 위해 다음 내용을 포함해주시면 좋아요:
+- 구매 시기 및 사용감 (흠집, 고장 여부 등)
+- 직거래 선호 장소 및 시간대
+- 네고 가능 여부"></textarea>
+          <div class="textarea-counter">
+            신뢰할 수 있는 정보를 적으면 거래 성사 확률이 3배 높아져요 🥔 (최대 500자)
+          </div>
+        </div>
+
+      </form>
+
+      <!-- 모달 푸터 액션 버튼 -->
+      <div class="gamza-modal-footer">
+        <button type="button" class="btn btn-secondary" id="modalCancelBtn">취소</button>
+        <button type="button" class="btn btn-primary" id="modalSubmitBtn">작성 완료</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 토스트 알림 컴포넌트 -->
+  <div class="gamza-toast" id="gamzaToast" role="status">
+    <span>🥔</span>
+    <span id="gamzaToastMessage">새로운 상품이 등록되었습니다!</span>
+  </div>
+
+  <!-- ==========================================================================
+       Javascript Logic & Global API (GamzaWrite)
+       ========================================================================== -->
+  <script>
+    /**
+     * 감자마켓 [화면 3: 글쓰기] 모듈
+     * 다른 에이전트 및 화면 컴포넌트와의 결합을 위해 전역 API를 제공합니다.
+     */
+    (function (window, document) {
+      'use strict';
+
+      // 기본 이미지 (이미지가 등록되지 않았을 때 폴백용 포근한 감자 일러스트 / 사진)
+      const DEFAULT_POTATO_IMG = 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80';
+      const DEFAULT_SELLER = {
+        name: '감자새싹',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+        location: '역삼1동'
+      };
+
+      // DOM Elements
+      const backdrop = document.getElementById('gamzaWriteModalBackdrop');
+      const closeXBtn = document.getElementById('modalCloseXBtn');
+      const cancelBtn = document.getElementById('modalCancelBtn');
+      const submitBtn = document.getElementById('modalSubmitBtn');
+      const productForm = document.getElementById('gamzaProductForm');
+
+      // Form Controls
+      const fileInput = document.getElementById('productImageFile');
+      const urlInput = document.getElementById('productImageUrl');
+      const applyUrlBtn = document.getElementById('applyUrlBtn');
+      const imagePreviewCard = document.getElementById('imagePreviewCard');
+      const previewImgElement = document.getElementById('previewImgElement');
+      const removeImageBtn = document.getElementById('removeImageBtn');
+
+      const titleInput = document.getElementById('productTitle');
+      const titleCharCount = document.getElementById('titleCharCount');
+      const categorySelect = document.getElementById('productCategory');
+      const priceInput = document.getElementById('productPrice');
+      const isFreeShareCheckbox = document.getElementById('isFreeShare');
+      const locationInput = document.getElementById('productLocation');
+      const locationPills = document.querySelectorAll('.location-pill');
+      const descriptionInput = document.getElementById('productDescription');
+      const descCharCount = document.getElementById('descCharCount');
+
+      // State
+      let currentImageDataUrl = '';
+      const callbacks = [];
+
+      /**
+       * Toast 알림 표시
+       */
+      function showToast(message) {
+        const toast = document.getElementById('gamzaToast');
+        const toastMsg = document.getElementById('gamzaToastMessage');
+        toastMsg.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2800);
+      }
+
+      /**
+       * 모달 열기
+       */
+      function openModal() {
+        backdrop.classList.add('is-active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => titleInput.focus(), 150);
+      }
+
+      /**
+       * 모달 닫기
+       */
+      function closeModal() {
+        backdrop.classList.remove('is-active');
+        document.body.style.overflow = '';
+      }
+
+      /**
+       * 이미지 미리보기 업데이트
+       */
+      function setImagePreview(src) {
+        currentImageDataUrl = src;
+        if (src) {
+          previewImgElement.src = src;
+          imagePreviewCard.classList.add('has-image');
+        } else {
+          previewImgElement.src = '';
+          imagePreviewCard.classList.remove('has-image');
+          fileInput.value = '';
+          urlInput.value = '';
+        }
+      }
+
+      // 파일 업로드 처리
+      fileInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 등록할 수 있어요!');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            setImagePreview(event.target.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // URL 적용 처리
+      applyUrlBtn.addEventListener('click', function () {
+        const url = urlInput.value.trim();
+        if (url) {
+          setImagePreview(url);
+        }
+      });
+
+      urlInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyUrlBtn.click();
+        }
+      });
+
+      // 이미지 삭제
+      removeImageBtn.addEventListener('click', function () {
+        setImagePreview('');
+      });
+
+      // 글자 수 카운터 - 제목
+      titleInput.addEventListener('input', function () {
+        titleCharCount.textContent = `${this.value.length}/40`;
+      });
+
+      // 글자 수 카운터 - 설명
+      descriptionInput.addEventListener('input', function () {
+        if (this.value.length > 500) {
+          this.value = this.value.slice(0, 500);
+        }
+        descCharCount.textContent = `${this.value.length}/500`;
+      });
+
+      // 빠른 동네 선택 태그
+      locationPills.forEach(pill => {
+        pill.addEventListener('click', function () {
+          locationInput.value = this.getAttribute('data-loc');
+        });
+      });
+
+      // 가격 포맷팅 (콤마)
+      priceInput.addEventListener('input', function () {
+        // 숫자만 추출
+        let raw = this.value.replace(/[^0-9]/g, '');
+        if (raw) {
+          this.value = Number(raw).toLocaleString('ko-KR');
+        } else {
+          this.value = '';
+        }
+      });
+
+      // 무료나눔 체크박스 연동
+      isFreeShareCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+          priceInput.value = '0';
+          priceInput.disabled = true;
+        } else {
+          priceInput.disabled = false;
+          priceInput.value = '';
+        }
+      });
+
+      /**
+       * 폼 리셋
+       */
+      function resetForm() {
+        productForm.reset();
+        setImagePreview('');
+        titleCharCount.textContent = '0/40';
+        descCharCount.textContent = '0/500';
+        priceInput.disabled = false;
+        document.getElementById('statusSelling').checked = true;
+        locationInput.value = '역삼1동';
+      }
+
+      /**
+       * 폼 검증
+       */
+      function validateForm() {
+        const title = titleInput.value.trim();
+        const category = categorySelect.value;
+        const price = isFreeShareCheckbox.checked ? 0 : Number(priceInput.value.replace(/[^0-9]/g, ''));
+        const location = locationInput.value.trim();
+        const description = descriptionInput.value.trim();
+
+        if (!title) {
+          alert('상품명을 입력해주세요!');
+          titleInput.focus();
+          return false;
+        }
+        if (!category) {
+          alert('카테고리를 선택해주세요!');
+          categorySelect.focus();
+          return false;
+        }
+        if (!isFreeShareCheckbox.checked && (priceInput.value.trim() === '' || isNaN(price))) {
+          alert('가격을 입력해주세요! (나눔일 경우 나눔 체크박스를 선택해주세요)');
+          priceInput.focus();
+          return false;
+        }
+        if (!location) {
+          alert('거래 희망 동네를 입력해주세요!');
+          locationInput.focus();
+          return false;
+        }
+        if (description.length > 500) {
+          alert('자세한 설명은 최대 500자까지 작성할 수 있어요!');
+          descriptionInput.focus();
+          return false;
+        }
+        return true;
+      }
+
+      /**
+       * 작성 완료 시 상품 객체 생성
+       */
+      function createProductObject() {
+        const title = titleInput.value.trim();
+        const category = categorySelect.value;
+        const price = isFreeShareCheckbox.checked ? 0 : Number(priceInput.value.replace(/[^0-9]/g, ''));
+        const location = locationInput.value.trim();
+        const statusEl = document.querySelector('input[name="productStatus"]:checked');
+        const status = statusEl ? statusEl.value : '판매중';
+        const description = descriptionInput.value.trim();
+        const image = currentImageDataUrl || DEFAULT_POTATO_IMG;
+
+        const newProduct = {
+          id: 'gamza_' + Date.now(),
+          title: title,
+          category: category,
+          price: price,
+          location: location,
+          timeAgo: '방금 전',
+          status: status,
+          image: image,
+          description: description,
+          seller: {
+            name: DEFAULT_SELLER.name,
+            avatar: DEFAULT_SELLER.avatar,
+            location: location
+          }
+        };
+
+        return newProduct;
+      }
+
+      /**
+       * 제출 처리 핸들러
+       */
+      function handleSubmit() {
+        if (!validateForm()) return;
+
+        const product = createProductObject();
+
+        // 1. 등록 콜백 함수들 호출
+        callbacks.forEach(fn => {
+          try {
+            fn(product);
+          } catch (err) {
+            console.error('[GamzaWrite] Error in callback:', err);
+          }
+        });
+
+        // 2. CustomEvent 발행 (다른 스크립트나 화면에서 구독 가능)
+        const event = new CustomEvent('gamza:product-created', {
+          bubbles: true,
+          detail: product
+        });
+        window.dispatchEvent(event);
+        document.dispatchEvent(event);
+
+        // 3. 데모 화면 업데이트
+        updateDemoPreview(product);
+
+        // 4. 알림 및 모달 닫기
+        showToast('🥔 감자 물품이 성공적으로 등록되었어요!');
+        closeModal();
+        resetForm();
+      }
+
+      /**
+       * 데모 UI 영역 업데이트
+       */
+      function updateDemoPreview(product) {
+        const demoImg = document.getElementById('demoProductImg');
+        const demoTitle = document.getElementById('demoProductTitle');
+        const demoStatus = document.getElementById('demoProductStatus');
+        const demoMeta = document.getElementById('demoProductMeta');
+        const demoPrice = document.getElementById('demoProductPrice');
+        const timestamp = document.getElementById('resultTimestamp');
+        const jsonArea = document.getElementById('jsonPreviewArea');
+
+        demoImg.src = product.image;
+        demoTitle.textContent = product.title;
+        demoStatus.textContent = product.status;
+        demoMeta.textContent = `${product.category} • ${product.location} • ${product.timeAgo}`;
+        demoPrice.textContent = product.price === 0 ? '나눔 🥔' : `${product.price.toLocaleString('ko-KR')}원`;
+        timestamp.textContent = `방금 등록 (${new Date().toLocaleTimeString('ko-KR')})`;
+
+        jsonArea.textContent = JSON.stringify(product, null, 2);
+      }
+
+      // 이벤트 리스너 바인딩
+      closeXBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      submitBtn.addEventListener('click', handleSubmit);
+
+      // 모달 바깥 클릭 시 닫기
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) {
+          closeModal();
+        }
+      });
+
+      // ESC 키로 닫기
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && backdrop.classList.contains('is-active')) {
+          closeModal();
+        }
+      });
+
+      // 데모 버튼 연결
+      const headerWriteBtn = document.getElementById('headerWriteBtn');
+      const pageOpenWriteBtn = document.getElementById('pageOpenWriteBtn');
+      if (headerWriteBtn) headerWriteBtn.addEventListener('click', openModal);
+      if (pageOpenWriteBtn) pageOpenWriteBtn.addEventListener('click', openModal);
+
+      // 초기 샘플 JSON 바인딩
+      const initialSample = {
+        id: 'gamza_sample_init',
+        title: '닌텐도 스위치 OLED 풀박스 (샘플)',
+        category: '디지털기기',
+        price: 280000,
+        location: '역삼1동',
+        timeAgo: '방금 전',
+        status: '판매중',
+        image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=300&q=80',
+        description: '실사용 3회 미만 거의 새 상품입니다. 강화유리 부착되어 있습니다.',
+        seller: {
+          name: '감자새싹',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+          location: '역삼1동'
+        }
+      };
+      document.getElementById('jsonPreviewArea').textContent = JSON.stringify(initialSample, null, 2);
+
+      /**
+       * ==========================================================================
+       * 외부 연동용 전역 API 인터페이스 (GamzaWrite)
+       * ==========================================================================
+       */
+      window.GamzaWrite = {
+        open: openModal,
+        close: closeModal,
+        reset: resetForm,
+        /**
+         * 새 상품 생성 콜백 등록
+         * @param {Function} callback - (product) => void
+         */
+        onProductSubmit: function (callback) {
+          if (typeof callback === 'function') {
+            callbacks.push(callback);
+          }
+        },
+        /**
+         * 프로그래밍 방식으로 상품 객체 직접 생성 함수
+         */
+        createProduct: function (customData = {}) {
+          const product = Object.assign(createProductObject(), customData);
+          callbacks.forEach(fn => fn(product));
+          window.dispatchEvent(new CustomEvent('gamza:product-created', { detail: product }));
+          return product;
+        }
+      };
+
+    })(window, document);
+  </script>
+</body>
+</html>
