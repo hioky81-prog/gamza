@@ -1,0 +1,3368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>감자 - 따뜻한 우리 동네 중고 거래</title>
+  
+  <!-- Pretendard 웹 폰트 (Seed Design 표준 폰트) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+
+  <!-- Supabase JS Client v2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* =========================================================
+       1. SEED DESIGN SYSTEM 파운데이션 토큰 (seed-design.io)
+       ========================================================= */
+    :root {
+      /* Brand Tokens (당근 / SEED 시그니처 Carrot 오렌지) */
+      --seed-color-fg-brand: #ff6600;
+      --seed-color-bg-brand-solid: #ff6600;
+      --seed-color-bg-brand-solid-pressed: #e14d00;
+      --seed-color-bg-brand-weak: #fff2ec;
+      --seed-color-bg-brand-weak-pressed: #ffe8db;
+      --seed-color-stroke-brand-solid: #ff6600;
+      --seed-color-stroke-brand-weak: #ffd5c0;
+
+      /* Neutral Layer & Surface Tokens */
+      --seed-color-bg-layer-basement: #f7f8f9;  /* Gray-100: 화면 전체 배경 */
+      --seed-color-bg-layer-default: #ffffff;   /* Gray-00: 카드, 모달 표면 */
+      --seed-color-bg-neutral-weak: #f3f4f5;    /* Gray-200: 보조 배경, 버튼 */
+      --seed-color-bg-neutral-weak-pressed: #eeeff1; /* Gray-300 */
+      --seed-color-bg-neutral-solid: #1a1c20;   /* Gray-1000: 주요 액션/선택 */
+      --seed-color-bg-neutral-solid-pressed: #2a3038;
+
+      /* Neutral Foreground (Text / Icons) */
+      --seed-color-fg-neutral: #1a1c20;         /* Gray-1000: 메인 본문/타이틀 */
+      --seed-color-fg-neutral-muted: #868b94;   /* Gray-700: 서브 메타 정보 */
+      --seed-color-fg-neutral-subtle: #b0b3ba;  /* Gray-600: 플레이스홀더 */
+      --seed-color-fg-on-brand-solid: #ffffff;
+      --seed-color-fg-on-neutral-solid: #ffffff;
+      --seed-color-fg-on-neutral-weak: #1a1c20;
+
+      /* Stroke / Border Tokens */
+      --seed-color-stroke-neutral-weak: #eeeff1; /* Gray-300: 구분선, 옅은 경계 */
+      --seed-color-stroke-neutral: #dcdee3;      /* Gray-400: 인풋, 아웃라인 */
+      --seed-color-stroke-neutral-muted: #d1d3d8; /* Gray-500 */
+      --seed-color-stroke-focus-ring: #ff6600;
+
+      /* Semantic Status Roles */
+      --seed-color-positive: #079171;
+      --seed-color-positive-bg: #edfaf6;
+      --seed-color-warning: #9b7821;
+      --seed-color-warning-bg: #fff7de;
+      --seed-color-critical: #ca1d13;
+      --seed-color-critical-bg: #fdf0f0;
+      --seed-color-informative: #217cf9;
+      --seed-color-informative-bg: #eff6ff;
+
+      /* Radius Tokens (SEED Radius System) */
+      --seed-radius-r1: 4px;
+      --seed-radius-r2: 8px;     /* 인풋, 버튼 sm/md, 뱃지 */
+      --seed-radius-r3: 12px;    /* 일반 카드, 팝업 컨테이너 */
+      --seed-radius-r4: 16px;    /* 상품 카드, 모달 모서리 */
+      --seed-radius-r5: 20px;    /* 모달 대형 */
+      --seed-radius-r6: 24px;
+      --seed-radius-full: 9999px; /* 칩, 원형 버튼, 필터 알약 */
+
+      /* Elevation / Shadows */
+      --seed-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+      --seed-shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+      --seed-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.06);
+      --seed-shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+      /* Typography Scale & Line Heights */
+      --seed-font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Noto Sans KR', sans-serif;
+      --seed-duration-normal: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--seed-font-family);
+      background-color: var(--seed-color-bg-layer-basement);
+      color: var(--seed-color-fg-neutral);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* =========================================================
+       2. SEED Top Navigation / Header 컴포넌트
+       ========================================================= */
+    .gamza-header {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--seed-color-stroke-neutral-weak);
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .brand-logo .potato-icon {
+      font-size: 1.85rem;
+      line-height: 1;
+      display: inline-block;
+      transition: transform var(--seed-duration-normal);
+    }
+
+    .brand-logo:hover .potato-icon {
+      transform: scale(1.1) rotate(-6deg);
+    }
+
+    .brand-logo .brand-text {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--seed-color-fg-brand);
+      letter-spacing: -0.03em;
+    }
+
+    /* SEED Badge (Brand Weak 스타일) */
+    .brand-logo .brand-badge {
+      font-size: 0.72rem;
+      background-color: var(--seed-color-bg-brand-weak);
+      color: var(--seed-color-fg-brand);
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-full);
+      border: 1px solid var(--seed-color-stroke-brand-weak);
+      letter-spacing: -0.01em;
+    }
+
+    /* SEED Text Input (헤더 검색창) */
+    .search-wrapper {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-input-box {
+      width: 100%;
+      height: 42px;
+      background-color: var(--seed-color-bg-neutral-weak);
+      border: 1.5px solid transparent;
+      border-radius: var(--seed-radius-full);
+      padding: 0 44px 0 1.15rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--seed-color-fg-neutral);
+      outline: none;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .search-input-box::placeholder {
+      color: var(--seed-color-fg-neutral-subtle);
+    }
+
+    .search-input-box:focus {
+      background-color: var(--seed-color-bg-layer-default);
+      border-color: var(--seed-color-stroke-focus-ring);
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+    }
+
+    .search-icon-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--seed-color-fg-neutral-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: var(--seed-radius-full);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .search-icon-btn:hover {
+      background-color: var(--seed-color-bg-neutral-weak-pressed);
+      color: var(--seed-color-fg-neutral);
+    }
+
+    .search-icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    /* 우측 액션 버튼들 (SEED Action Button 스펙) */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      height: 40px;
+      padding: 0 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--seed-radius-r2);
+      border: none;
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+      text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* SEED Action Button: Brand Solid Variant (CTA) */
+    .btn-primary {
+      background-color: var(--seed-color-bg-brand-solid);
+      color: var(--seed-color-fg-on-brand-solid);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--seed-color-bg-brand-solid-pressed);
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.35);
+    }
+
+    .btn-primary:active {
+      background-color: var(--seed-color-bg-brand-solid-pressed);
+    }
+
+    .btn-primary svg {
+      width: 17px;
+      height: 17px;
+      stroke-width: 2.5;
+    }
+
+    /* SEED Action Button: Neutral Weak Variant */
+    .btn-outline {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral);
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--seed-color-bg-neutral-weak-pressed);
+      color: var(--seed-color-fg-neutral);
+    }
+
+    /* =========================================================
+       3. 메인 컨텐츠 & 카테고리 칩 & 툴바
+       ========================================================= */
+    .gamza-main {
+      flex: 1;
+      max-width: 1140px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+    }
+
+    /* SEED Chip Group (카테고리 칩 바) */
+    .category-section {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .category-scroll-container {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .category-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* SEED Chip Component */
+    .category-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      height: 36px;
+      padding: 0 0.95rem;
+      border-radius: var(--seed-radius-full);
+      border: 1px solid var(--seed-color-stroke-neutral);
+      background-color: var(--seed-color-bg-layer-default);
+      color: var(--seed-color-fg-neutral-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--seed-duration-normal);
+      user-select: none;
+    }
+
+    .category-btn:hover {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral);
+      border-color: var(--seed-color-stroke-neutral-muted);
+    }
+
+    /* SEED Selected Chip (Neutral Solid 고대비) */
+    .category-btn.active {
+      background-color: var(--seed-color-bg-neutral-solid);
+      color: var(--seed-color-fg-on-neutral-solid);
+      border-color: var(--seed-color-bg-neutral-solid);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(26, 28, 32, 0.18);
+    }
+
+    /* SEED Filter Bar & Toolbar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0.5rem 0 1.25rem;
+      border-bottom: 1px solid var(--seed-color-stroke-neutral-weak);
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-left-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* SEED Badge (Neutral Weak 스타일) */
+    .filter-item-count {
+      font-size: 0.78rem;
+      color: var(--seed-color-fg-neutral-muted);
+      background-color: var(--seed-color-bg-neutral-weak);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      padding: 0.15rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+      font-weight: 600;
+    }
+
+    /* SEED Switch Component (거래 가능만 보기) */
+    .toggle-filter-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--seed-color-fg-neutral-muted);
+      user-select: none;
+      transition: color var(--seed-duration-normal);
+    }
+
+    .toggle-filter-label:hover {
+      color: var(--seed-color-fg-neutral);
+    }
+
+    .switch-ui {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background-color: var(--seed-color-stroke-neutral);
+      border-radius: var(--seed-radius-full);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .switch-ui::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .hidden-checkbox {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .hidden-checkbox:checked + .switch-ui {
+      background-color: var(--seed-color-bg-brand-solid);
+    }
+
+    .hidden-checkbox:checked + .switch-ui::after {
+      transform: translateX(20px);
+    }
+
+    /* =========================================================
+       4. SEED Card & List Component (상품 그리드)
+       ========================================================= */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r4);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--seed-duration-normal), box-shadow var(--seed-duration-normal), border-color var(--seed-duration-normal);
+      box-shadow: var(--seed-shadow-card);
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--seed-shadow-card-hover);
+      border-color: var(--seed-color-stroke-neutral);
+    }
+
+    .product-card:active {
+      transform: scale(0.99);
+    }
+
+    /* 썸네일 이미지 프레임 */
+    .card-thumb-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 72%; /* 4:3 비율 */
+      background-color: var(--seed-color-bg-neutral-weak);
+      overflow: hidden;
+    }
+
+    .card-thumb-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .product-card:hover .card-thumb-img {
+      transform: scale(1.04);
+    }
+
+    .product-card.sold {
+      opacity: 0.55;
+      background-color: #fafbfc;
+    }
+
+    .product-card.sold:hover {
+      opacity: 0.85;
+    }
+
+    .product-card.sold .card-thumb-img {
+      filter: grayscale(0.85) contrast(0.9);
+      opacity: 0.8;
+    }
+
+    /* SEED Badge (상태별 역할 기반 컬러 적용) */
+    .card-badges {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+      letter-spacing: -0.01em;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 판매중: Positive Role */
+    .status-selling {
+      background-color: var(--seed-color-positive-bg);
+      color: var(--seed-color-positive);
+      border: 1px solid rgba(7, 145, 113, 0.2);
+    }
+
+    /* 예약중: Warning Role */
+    .status-reserved {
+      background-color: var(--seed-color-warning-bg);
+      color: var(--seed-color-warning);
+      border: 1px solid rgba(155, 120, 33, 0.2);
+    }
+
+    /* 거래 완료: Neutral Muted Role */
+    .status-sold {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral-muted);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+    }
+
+    /* 카테고리 태그 */
+    .category-chip {
+      background: rgba(26, 28, 32, 0.65);
+      backdrop-filter: blur(4px);
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--seed-radius-r1);
+    }
+
+    /* 카드 본문 (SEED Typography 적용) */
+    .card-body {
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--seed-color-fg-neutral);
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 2.8em;
+      letter-spacing: -0.01em;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--seed-color-fg-neutral-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-meta .dot {
+      color: var(--seed-color-stroke-neutral);
+    }
+
+    .card-footer-row {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--seed-color-stroke-neutral-weak);
+      padding-top: 0.75rem;
+    }
+
+    .card-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      letter-spacing: -0.02em;
+    }
+
+    .card-price.free {
+      color: var(--seed-color-fg-brand);
+      font-weight: 800;
+    }
+
+    .card-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .card-stats span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* 빈 목록 안내 (SEED Result Section) */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4.5rem 1rem;
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r4);
+      border: 1px dashed var(--seed-color-stroke-neutral);
+    }
+
+    .empty-state-icon {
+      font-size: 2.75rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .empty-state-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--seed-color-fg-neutral-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    /* =========================================================
+       5. [화면 2] SEED Dialog & Sheet (상세 팝업 모달)
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.48);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .detail-modal-card {
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r5);
+      box-shadow: var(--seed-shadow-modal);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .detail-modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    /* SEED Icon Button (팝업 닫기 버튼) */
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--seed-radius-full);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 15;
+      color: var(--seed-color-fg-neutral);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .modal-close-btn:hover {
+      background: #ffffff;
+      transform: scale(1.06);
+      color: var(--seed-color-fg-brand);
+    }
+
+    .detail-hero-image-wrap {
+      position: relative;
+      width: 100%;
+      height: 290px;
+      background-color: var(--seed-color-bg-neutral-weak);
+      flex-shrink: 0;
+    }
+
+    .detail-hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .detail-image-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(to top, rgba(0,0,0,0.25), transparent);
+      pointer-events: none;
+    }
+
+    .detail-scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.4rem 1rem;
+    }
+
+    .detail-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .detail-status-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+    }
+
+    .detail-category-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--seed-color-fg-neutral-muted);
+      background-color: var(--seed-color-bg-neutral-weak);
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+    }
+
+    .detail-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+      word-break: keep-all;
+      letter-spacing: -0.02em;
+    }
+
+    .detail-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      color: var(--seed-color-fg-neutral-muted);
+      margin-bottom: 1rem;
+    }
+
+    .detail-price-box {
+      background-color: var(--seed-color-bg-neutral-weak);
+      border-radius: var(--seed-radius-r3);
+      padding: 0.85rem 1.1rem;
+      margin-bottom: 1.15rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .detail-price-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--seed-color-fg-neutral);
+      letter-spacing: -0.02em;
+    }
+
+    .detail-price-label {
+      font-size: 0.78rem;
+      color: var(--seed-color-fg-neutral-muted);
+      font-weight: 500;
+    }
+
+    /* =========================================================
+       SEED Manner Temp Component (당근/SEED 시그니처 매너온도)
+       ========================================================= */
+    .seller-profile-card {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: var(--seed-color-bg-layer-default);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      border-radius: var(--seed-radius-r3);
+      margin-bottom: 1.25rem;
+    }
+
+    .seller-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--seed-radius-full);
+      object-fit: cover;
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+    }
+
+    .seller-info {
+      flex: 1;
+    }
+
+    .seller-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .seller-location {
+      font-size: 0.78rem;
+      color: var(--seed-color-fg-neutral-muted);
+      margin-top: 1px;
+    }
+
+    .manner-temp-box {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .manner-temp-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .manner-temp-value {
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .manner-temp-emoji {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    /* 매너온도 레벨별 색상 (SEED Manner Temp 스펙) */
+    .temp-level-blue { color: #217cf9; }
+    .temp-level-orange { color: #ff6600; }
+    .temp-level-red { color: #fc6a66; }
+
+    /* 게이지 바 */
+    .manner-temp-track {
+      width: 70px;
+      height: 4px;
+      background-color: var(--seed-color-stroke-neutral-weak);
+      border-radius: var(--seed-radius-full);
+      overflow: hidden;
+    }
+
+    .manner-temp-fill {
+      height: 100%;
+      border-radius: var(--seed-radius-full);
+      transition: width 0.3s ease;
+    }
+
+    .temp-fill-blue { background-color: #217cf9; }
+    .temp-fill-orange { background-color: #ff6600; }
+    .temp-fill-red { background-color: #fc6a66; }
+
+    .manner-temp-caption {
+      font-size: 0.7rem;
+      color: var(--seed-color-fg-neutral-muted);
+      text-decoration: underline;
+      text-decoration-color: var(--seed-color-stroke-neutral);
+    }
+
+    /* 본문 */
+    .detail-description {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #2a3038;
+      white-space: pre-line;
+      margin-bottom: 0.75rem;
+      padding-top: 0.25rem;
+    }
+
+    /* 상세 팝업 하단 액션 바 */
+    .detail-actions-footer {
+      padding: 0.85rem 1.4rem;
+      background: var(--seed-color-bg-layer-default);
+      border-top: 1px solid var(--seed-color-stroke-neutral-weak);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* 관심 하트 버튼 (SEED Action Button: Neutral Outline) */
+    .btn-heart-interest {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--seed-radius-r2);
+      border: 1px solid var(--seed-color-stroke-neutral);
+      background: var(--seed-color-bg-layer-default);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--seed-color-fg-neutral-muted);
+      transition: all var(--seed-duration-normal);
+      flex-shrink: 0;
+    }
+
+    .btn-heart-interest:hover {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-critical);
+      border-color: #feb7b3;
+    }
+
+    .btn-heart-interest.active {
+      color: var(--seed-color-critical);
+      background: var(--seed-color-critical-bg);
+      border-color: #feb7b3;
+    }
+
+    .btn-heart-interest svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* 채팅 시작하기 (SEED Action Button: Brand Solid High Emphasis) */
+    .btn-chat-start {
+      flex: 1;
+      height: 48px;
+      background-color: var(--seed-color-bg-brand-solid);
+      color: var(--seed-color-fg-on-brand-solid);
+      border: none;
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.98rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.25);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .btn-chat-start:hover {
+      background-color: var(--seed-color-bg-brand-solid-pressed);
+      box-shadow: 0 4px 14px rgba(255, 102, 0, 0.35);
+    }
+
+    .btn-chat-start:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================================
+       작성자 전용 상태 변경 및 수정/삭제 액션 바 (SEED Component)
+       ========================================================= */
+    .owner-status-box {
+      margin: 0.85rem 0 0.5rem;
+      padding: 0.85rem 1rem;
+      background-color: var(--seed-color-bg-neutral-weak);
+      border-radius: var(--seed-radius-r3);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .owner-status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .owner-status-title {
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .owner-status-tip {
+      color: var(--seed-color-fg-neutral-muted);
+      font-size: 0.76rem;
+    }
+
+    .status-btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .btn-status-option {
+      padding: 0.55rem 0.3rem;
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.84rem;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid var(--seed-color-stroke-neutral);
+      background: var(--seed-color-bg-layer-default);
+      color: var(--seed-color-fg-neutral-muted);
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .btn-status-option:hover {
+      background-color: #ffffff;
+      color: var(--seed-color-fg-neutral);
+      border-color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .btn-status-option.active.status-opt-selling {
+      background-color: var(--seed-color-positive-bg);
+      color: var(--seed-color-positive);
+      border-color: var(--seed-color-positive);
+      box-shadow: 0 0 0 1px var(--seed-color-positive);
+      font-weight: 700;
+    }
+
+    .btn-status-option.active.status-opt-reserved {
+      background-color: var(--seed-color-warning-bg);
+      color: var(--seed-color-warning);
+      border-color: var(--seed-color-warning);
+      box-shadow: 0 0 0 1px var(--seed-color-warning);
+      font-weight: 700;
+    }
+
+    .btn-status-option.active.status-opt-sold {
+      background-color: #4b525d;
+      color: #ffffff;
+      border-color: #2a3038;
+      box-shadow: 0 0 0 1px #2a3038;
+      font-weight: 700;
+    }
+
+    /* 작성자 전용 푸터 버튼 (수정, 삭제) */
+    .btn-owner-edit {
+      flex: 1;
+      height: 48px;
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral);
+      border: 1px solid var(--seed-color-stroke-neutral);
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .btn-owner-edit:hover {
+      background-color: var(--seed-color-bg-neutral-weak-pressed);
+      border-color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .btn-owner-edit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-owner-delete {
+      flex: 1;
+      height: 48px;
+      background-color: var(--seed-color-critical-bg);
+      color: var(--seed-color-critical);
+      border: 1px solid rgba(224, 53, 53, 0.25);
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .btn-owner-delete:hover {
+      background-color: #ffe3e3;
+      border-color: var(--seed-color-critical);
+    }
+
+    .btn-owner-delete:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================================
+       6. [화면 3] SEED Form & Field (글쓰기 모달 폼)
+       ========================================================= */
+    .write-modal-card {
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r5);
+      box-shadow: var(--seed-shadow-modal);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .write-modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .write-modal-header {
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--seed-color-stroke-neutral-weak);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--seed-color-bg-layer-default);
+    }
+
+    .write-modal-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .write-scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.35rem 1.4rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      margin-bottom: 0.45rem;
+    }
+
+    .form-label .required {
+      color: var(--seed-color-critical);
+      margin-left: 2px;
+    }
+
+    /* SEED Form Controls (Input, Select, Textarea) */
+    .form-control {
+      width: 100%;
+      height: 44px;
+      padding: 0 0.95rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--seed-color-fg-neutral);
+      background-color: var(--seed-color-bg-layer-default);
+      border: 1px solid var(--seed-color-stroke-neutral);
+      border-radius: var(--seed-radius-r2);
+      outline: none;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .form-control::placeholder {
+      color: var(--seed-color-fg-neutral-subtle);
+    }
+
+    .form-control:focus {
+      border-color: var(--seed-color-stroke-focus-ring);
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+    }
+
+    textarea.form-control {
+      height: 120px;
+      padding: 0.75rem 0.95rem;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    /* SEED Attachment Input (사진 업로드) */
+    .image-input-container {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .image-preview-box {
+      width: 84px;
+      height: 84px;
+      border-radius: var(--seed-radius-r2);
+      border: 1.5px dashed var(--seed-color-stroke-neutral);
+      background: var(--seed-color-bg-neutral-weak);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .image-preview-box:hover {
+      border-color: var(--seed-color-fg-brand);
+      background-color: var(--seed-color-bg-brand-weak);
+    }
+
+    .image-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .image-preview-box .placeholder-icon {
+      font-size: 1.6rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .image-inputs-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    /* SEED Segmented Control (판매 상태) */
+    .status-radio-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      background-color: var(--seed-color-bg-neutral-weak);
+      padding: 4px;
+      border-radius: var(--seed-radius-r2);
+    }
+
+    .status-radio-item {
+      position: relative;
+    }
+
+    .status-radio-item input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .status-radio-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--seed-color-fg-neutral-muted);
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+      user-select: none;
+    }
+
+    .status-radio-item input[type="radio"]:checked + .status-radio-label {
+      background-color: var(--seed-color-bg-layer-default);
+      color: var(--seed-color-fg-neutral);
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .write-modal-footer {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid var(--seed-color-stroke-neutral-weak);
+      background: var(--seed-color-bg-layer-default);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.65rem;
+    }
+
+    /* =========================================================
+       7. SEED Snackbar (토스트 알림)
+       ========================================================= */
+    .gamza-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: rgba(26, 28, 32, 0.95);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 0.75rem 1.35rem;
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: var(--seed-shadow-toast);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .gamza-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* =========================================================
+       8. 반응형 레이아웃
+       ========================================================= */
+    @media (max-width: 900px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.15rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-container {
+        padding: 0.75rem 1rem;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .brand-logo .brand-badge {
+        display: none;
+      }
+
+      .search-wrapper {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .card-thumb-wrapper {
+        padding-top: 60%;
+      }
+
+            .detail-modal-card,
+      .write-modal-card,
+      .auth-modal-card {
+        max-height: 94vh;
+        border-radius: var(--seed-radius-r5) var(--seed-radius-r5) 0 0;
+        margin-top: auto;
+      }
+
+      .detail-hero-image-wrap {
+        height: 230px;
+      }
+    }
+
+    /* =========================================================
+       7. SEED Auth Modal (로그인 / 회원가입) & Header User UI
+       ========================================================= */
+    .auth-modal-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r5);
+      box-shadow: var(--seed-shadow-modal);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 2.2rem 2rem 2rem;
+    }
+
+    .modal-overlay.active .auth-modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 1.4rem;
+    }
+
+    .auth-header-icon {
+      font-size: 2.6rem;
+      margin-bottom: 0.4rem;
+      display: inline-block;
+      animation: potatoBounce 1.8s infinite ease-in-out;
+    }
+
+    @keyframes potatoBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .auth-header-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--seed-color-fg-neutral);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+
+    .auth-header-subtitle {
+      font-size: 0.88rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    /* 로그인/회원가입 세그먼트 탭 */
+    .auth-tab-segment {
+      display: flex;
+      background-color: var(--seed-color-bg-neutral-weak);
+      padding: 4px;
+      border-radius: var(--seed-radius-r3);
+      margin-bottom: 1.3rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.65rem 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--seed-color-fg-neutral-muted);
+      border-radius: var(--seed-radius-r2);
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .auth-tab-btn.active {
+      background-color: var(--seed-color-bg-layer-default);
+      color: var(--seed-color-fg-brand);
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .auth-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .auth-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+    }
+
+    .auth-submit-btn {
+      width: 100%;
+      height: 46px;
+      font-size: 0.96rem;
+      margin-top: 0.4rem;
+    }
+
+    .auth-switch-link {
+      text-align: center;
+      margin-top: 0.9rem;
+      font-size: 0.84rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .auth-switch-link a {
+      color: var(--seed-color-fg-brand);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 0.35rem;
+    }
+
+    /* 헤더 사용자 뱃지 & 로그아웃 */
+    .auth-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .user-profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.28rem 0.75rem 0.28rem 0.45rem;
+      background-color: var(--seed-color-bg-brand-weak);
+      border: 1px solid var(--seed-color-stroke-brand-weak);
+      border-radius: var(--seed-radius-full);
+      cursor: default;
+    }
+
+    .user-avatar-mini {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ffffff;
+      font-size: 0.92rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .user-nickname-text {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-brand);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-logout {
+      font-size: 0.82rem;
+      height: 38px;
+      padding: 0 0.85rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .btn-logout:hover {
+      color: var(--seed-color-critical);
+      border-color: var(--seed-color-critical-bg);
+      background-color: var(--seed-color-critical-bg);
+    }
+
+    .card-author {
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       [화면 1] SEED Top Navigation: 로고, 검색창, [글쓰기], [로그인]
+       ========================================================= -->
+  <header class="gamza-header">
+    <div class="header-container">
+      <a class="brand-logo" onclick="resetAllFilters()">
+        <span class="potato-icon">🥔</span>
+        <span class="brand-text">감자</span>
+        <span class="brand-badge">우리 동네</span>
+      </a>
+
+      <div class="search-wrapper">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input-box" 
+          placeholder="어떤 물건을 찾으시나요? (예: 감자, 닌텐도, 패딩)"
+          onkeyup="handleSearchKeyUp(event)"
+        >
+        <button class="search-icon-btn" onclick="executeSearch()" title="검색">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="handleWriteButtonClick()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+          </svg>
+          글쓰기
+        </button>
+
+        <!-- 로그인 전: [로그인] 버튼만 표시 -->
+        <div id="guestActionGroup" class="auth-btn-group">
+          <button class="btn btn-outline" id="btnLoginOpen" onclick="openAuthModal('login')">
+            로그인
+          </button>
+        </div>
+
+        <!-- 로그인 후: [로그인] 버튼 숨김 처리, [닉네임]과 [로그아웃] 버튼만 표시 -->
+        <div id="userActionGroup" class="auth-btn-group" style="display: none;">
+          <div class="user-profile-badge" id="headerUserBadge">
+            <span class="user-avatar-mini" id="headerUserAvatar">🥔</span>
+            <span class="user-nickname-text" id="headerUserNickname">포슬감자</span>
+          </div>
+          <button class="btn btn-outline btn-logout" id="btnLogout" onclick="handleLogout()">
+            로그아웃
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       [화면 1] 메인 콘텐츠: 카테고리 칩 바, 거래 가능 토글, 상품 그리드
+       ========================================================= -->
+  <main class="gamza-main">
+    
+    <!-- SEED Chip Group: 카테고리 필터 바 -->
+    <nav class="category-section">
+      <div class="category-scroll-container" id="categoryTabs">
+        <!-- JS로 동적 렌더링 -->
+      </div>
+    </nav>
+
+    <!-- SEED Filter Bar: 상품 개수 & 거래 가능만 보기 토글 스위치 -->
+    <section class="filter-bar">
+      <div class="filter-left-title">
+        <span id="currentCategoryTitle">전체 매물</span>
+        <span class="filter-item-count" id="productCountBadge">6개</span>
+      </div>
+
+      <label class="toggle-filter-label" title="판매중/예약중인 상품만 표시합니다">
+        <span>거래 가능만 보기</span>
+        <input type="checkbox" id="availableOnlyToggle" class="hidden-checkbox" onchange="handleAvailableToggle(this.checked)">
+        <span class="switch-ui"></span>
+      </label>
+    </section>
+
+    <!-- SEED Product Grid (상품 카드 목록) -->
+    <section class="product-grid" id="productGrid">
+      <!-- JS로 동적 렌더링 -->
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       [화면 2] SEED Dialog: 상세 팝업 모달
+       ========================================================= -->
+  <div class="modal-overlay" id="detailModalOverlay" onclick="handleDetailOverlayClick(event)">
+    <article class="detail-modal-card" id="detailModalCard">
+      <!-- SEED Icon Close Button -->
+      <button class="modal-close-btn" onclick="closeDetailModal()" title="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- 상품 대표 이미지 -->
+      <div class="detail-hero-image-wrap">
+        <img id="detailHeroImage" class="detail-hero-image" src="" alt="상품 대표 이미지">
+        <div class="detail-image-gradient"></div>
+      </div>
+
+      <!-- 상세 정보 본문 -->
+      <div class="detail-scroll-body">
+        
+        <!-- 판매 상태 및 카테고리 -->
+        <div class="detail-tags-row">
+          <span class="detail-status-pill" id="detailStatusBadge">판매중</span>
+          <span class="detail-category-pill" id="detailCategoryTag">디지털기기</span>
+        </div>
+
+        <!-- [작성자 전용] 상태 변경 선택 UI -->
+        <div class="owner-status-box" id="ownerStatusBox" style="display: none;">
+          <div class="owner-status-header">
+            <span class="owner-status-title">🥔 내 게시글 상태 변경</span>
+            <span class="owner-status-tip">버튼을 누르면 즉시 변경 및 저장됩니다</span>
+          </div>
+          <div class="status-btn-group">
+            <button type="button" class="btn-status-option status-opt-selling" id="optBtnSelling" onclick="handleQuickStatusChange('판매중')">
+              🌱 판매중
+            </button>
+            <button type="button" class="btn-status-option status-opt-reserved" id="optBtnReserved" onclick="handleQuickStatusChange('예약중')">
+              ⏳ 예약중
+            </button>
+            <button type="button" class="btn-status-option status-opt-sold" id="optBtnSold" onclick="handleQuickStatusChange('거래 완료')">
+              ✅ 거래 완료
+            </button>
+          </div>
+        </div>
+
+        <!-- 상품명 -->
+        <h2 class="detail-title" id="detailTitle">상품명</h2>
+
+        <!-- 판매 위치, 업로드 시간 -->
+        <div class="detail-meta-row">
+          <span id="detailLocation">역삼동</span>
+          <span>·</span>
+          <span id="detailTimeAgo">10분 전</span>
+        </div>
+
+        <!-- 가격 카드 -->
+        <div class="detail-price-box">
+          <span class="detail-price-num" id="detailPrice">15,000원</span>
+          <span class="detail-price-label">안전 직거래 권장</span>
+        </div>
+
+        <!-- SEED Manner Temp & 판매자 정보 컴포넌트 -->
+        <div class="seller-profile-card">
+          <img id="detailSellerAvatar" class="seller-avatar" src="" alt="판매자 프로필">
+          <div class="seller-info">
+            <div class="seller-name">
+              <span id="detailSellerName">포슬포슬감자</span>
+            </div>
+            <div class="seller-location" id="detailSellerLocation">서울 강남구 역삼동</div>
+          </div>
+          <!-- SEED Manner Temp Indicator -->
+          <div class="manner-temp-box">
+            <div class="manner-temp-header">
+              <span class="manner-temp-value" id="detailSellerTemp">38.2℃</span>
+              <span class="manner-temp-emoji" id="detailSellerEmoji">😊</span>
+            </div>
+            <div class="manner-temp-track">
+              <div class="manner-temp-fill" id="detailSellerTempFill" style="width: 38%;"></div>
+            </div>
+            <span class="manner-temp-caption">매너온도</span>
+          </div>
+        </div>
+
+        <!-- 상품 설명 본문 -->
+        <div class="detail-description" id="detailDescription">
+          상품 상세 설명이 들어가는 자리입니다.
+        </div>
+
+      </div>
+
+      <!-- SEED Action Footer (일반 방문자용: 관심 추가 & 채팅 시작하기) -->
+      <footer class="detail-actions-footer" id="buyerActionsFooter">
+        <button class="btn-heart-interest" id="btnHeartInterest" onclick="toggleInterest()" title="관심 추가">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+        <button class="btn-chat-start" onclick="startChatPlaceholder()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          채팅 시작하기
+        </button>
+      </footer>
+
+      <!-- SEED Action Footer (게시글 작성자용: 수정하기 & 삭제하기) -->
+      <footer class="detail-actions-footer" id="ownerActionsFooter" style="display: none;">
+        <button type="button" class="btn-owner-edit" onclick="openEditModal(activeDetailProduct?.id)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          게시글 수정
+        </button>
+        <button type="button" class="btn-owner-delete" onclick="handleDeleteProduct(activeDetailProduct?.id)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          게시글 삭제
+        </button>
+      </footer>
+    </article>
+  </div>
+
+  <!-- =========================================================
+       [화면 3] SEED Dialog: 글쓰기 모달 폼
+       ========================================================= -->
+  <div class="modal-overlay" id="writeModalOverlay" onclick="handleWriteOverlayClick(event)">
+    <article class="write-modal-card" id="writeModalCard">
+      <!-- 헤더 -->
+      <header class="write-modal-header">
+        <h2 id="writeModalHeading">내 물건 팔기</h2>
+        <button class="modal-close-btn" onclick="closeWriteModal()" style="position:static;" title="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- 폼 본문 -->
+      <form id="writeProductForm" onsubmit="handleProductSubmit(event)" class="write-scroll-body">
+        
+        <!-- 1. 상품 이미지 (SEED Attachment Input 형태) -->
+        <div class="form-group">
+          <label class="form-label">상품 이미지 <span class="required">*</span></label>
+          <div class="image-input-container">
+            <div class="image-preview-box" id="writeImagePreviewBox">
+              <span class="placeholder-icon" id="previewPlaceholderIcon">📷</span>
+              <img id="writePreviewImg" alt="미리보기">
+            </div>
+            <div class="image-inputs-right">
+              <input 
+                type="url" 
+                id="inputImageUrl" 
+                class="form-control" 
+                placeholder="이미지 URL 직접 입력 (권장)"
+                oninput="handleImageUrlInput(this.value)"
+              >
+              <input 
+                type="file" 
+                id="inputFileUpload" 
+                accept="image/*" 
+                class="form-control" 
+                style="padding-top:7px; font-size:0.82rem;"
+                onchange="handleFileInput(event)"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 상품명 -->
+        <div class="form-group">
+          <label class="form-label" for="inputTitle">상품명 <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="inputTitle" 
+            class="form-control" 
+            placeholder="상품명을 입력해주세요 (예: 강원도 햇감자 5kg)" 
+            required 
+            maxlength="40"
+          >
+        </div>
+
+        <!-- 3. 카테고리 -->
+        <div class="form-group">
+          <label class="form-label" for="selectCategory">카테고리 <span class="required">*</span></label>
+          <select id="selectCategory" class="form-control" required>
+            <option value="">카테고리를 선택해주세요</option>
+            <option value="디지털기기">디지털기기</option>
+            <option value="가구/인테리어">가구/인테리어</option>
+            <option value="의류">의류</option>
+            <option value="생활가전">생활가전</option>
+            <option value="도서/티켓">도서/티켓</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+
+        <!-- 4. 가격 -->
+        <div class="form-group">
+          <label class="form-label" for="inputPrice">가격 (원) <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="inputPrice" 
+            class="form-control" 
+            placeholder="가격을 숫자로 입력해주세요 (0원 = 무료나눔)" 
+            min="0" 
+            step="100" 
+            required
+          >
+        </div>
+
+        <!-- 5. 거래 동네 -->
+        <div class="form-group">
+          <label class="form-label" for="inputLocation">거래 동네 <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="inputLocation" 
+            class="form-control" 
+            placeholder="거래 희망 동네 (예: 역삼1동, 서초동)" 
+            value="역삼1동" 
+            required
+          >
+        </div>
+
+        <!-- 6. 판매 상태 (SEED Segmented Control) -->
+        <div class="form-group">
+          <label class="form-label">판매 상태 <span class="required">*</span></label>
+          <div class="status-radio-group">
+            <div class="status-radio-item">
+              <input type="radio" id="statusSelling" name="productStatus" value="판매중" checked>
+              <label for="statusSelling" class="status-radio-label">판매중</label>
+            </div>
+            <div class="status-radio-item">
+              <input type="radio" id="statusReserved" name="productStatus" value="예약중">
+              <label for="statusReserved" class="status-radio-label">예약중</label>
+            </div>
+            <div class="status-radio-item">
+              <input type="radio" id="statusCompleted" name="productStatus" value="거래 완료">
+              <label for="statusCompleted" class="status-radio-label">거래 완료</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. 자세한 설명 -->
+        <div class="form-group">
+          <label class="form-label" for="textareaDescription" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>자세한 설명 <span class="required">*</span></span>
+            <span style="font-size:0.8rem; font-weight:normal; color:var(--seed-color-fg-neutral-muted);" id="indexDescCharCount">0/500</span>
+          </label>
+          <textarea 
+            id="textareaDescription" 
+            class="form-control" 
+            maxlength="500"
+            placeholder="구매 시기, 사용감, 하자 유무 등 물건의 상태를 솔직하고 자세히 적어주시면 더 빠르게 거래돼요!"
+            oninput="document.getElementById('indexDescCharCount').textContent = `${this.value.length}/500`"
+            required
+          ></textarea>
+        </div>
+
+        <!-- 하단 작성 완료 버튼 -->
+        <div class="write-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeWriteModal()">취소</button>
+          <button type="submit" class="btn btn-primary" id="btnWriteSubmit">
+            작성 완료
+          </button>
+        </div>
+      </form>
+    </article>
+  </div>
+
+  <!-- =========================================================
+       [화면 4] SEED Dialog: 로그인 / 회원가입 모달
+       ========================================================= -->
+  <div class="modal-overlay" id="authModalOverlay" onclick="handleAuthOverlayClick(event)">
+    <article class="auth-modal-card" id="authModalCard">
+      <!-- 닫기 버튼 -->
+      <button class="modal-close-btn" onclick="closeAuthModal()" title="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- 헤더 -->
+      <div class="auth-header">
+        <span class="auth-header-icon">🥔</span>
+        <h2 class="auth-header-title" id="authModalTitle">감자마을 로그인</h2>
+        <p class="auth-header-subtitle" id="authModalSubtitle">우리 동네 따뜻한 중고거래를 시작해보세요</p>
+      </div>
+
+      <!-- 세그먼트 탭: 로그인 / 회원가입 -->
+      <div class="auth-tab-segment">
+        <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthMode('login')">로그인</button>
+        <button type="button" class="auth-tab-btn" id="tabBtnSignup" onclick="switchAuthMode('signup')">회원가입</button>
+      </div>
+
+      <!-- 폼 -->
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="auth-form">
+        <!-- 닉네임 필드 (회원가입 시 필수로 입력받음) -->
+        <div class="auth-input-group" id="groupSignupNickname" style="display: none;">
+          <label class="auth-label" for="authNicknameInput">감자 닉네임 <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="authNicknameInput" 
+            class="form-control" 
+            placeholder="동네 이웃들이 부를 닉네임 (예: 포슬감자)"
+            maxlength="15"
+          >
+        </div>
+
+        <!-- 이메일 필드 -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="authEmailInput">이메일 주소 <span class="required">*</span></label>
+          <input 
+            type="email" 
+            id="authEmailInput" 
+            class="form-control" 
+            placeholder="example@gamza.com" 
+            required 
+            autocomplete="email"
+          >
+        </div>
+
+        <!-- 비밀번호 필드 -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="authPasswordInput">비밀번호 <span class="required">*</span></label>
+          <input 
+            type="password" 
+            id="authPasswordInput" 
+            class="form-control" 
+            placeholder="6자 이상 입력해주세요" 
+            minlength="6" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <!-- 에러/안내 메시지 -->
+        <div id="authErrorMessage" style="display:none; font-size:0.83rem; color:var(--seed-color-critical); background:var(--seed-color-critical-bg); padding:0.6rem 0.8rem; border-radius:var(--seed-radius-r2); text-align:center;"></div>
+
+        <!-- 제출 버튼 -->
+        <button type="submit" class="btn btn-primary auth-submit-btn" id="btnAuthSubmit">
+          로그인하기
+        </button>
+
+        <!-- 하단 전환 링크 -->
+        <div class="auth-switch-link">
+          <span id="authSwitchText">아직 감자 계정이 없으신가요?</span>
+          <a href="javascript:void(0)" id="authSwitchLink" onclick="toggleAuthMode()">회원가입</a>
+        </div>
+      </form>
+    </article>
+  </div>
+
+  <!-- SEED Snackbar (토스트 알림) -->
+  <div class="gamza-toast" id="gamzaToast">알림 메시지</div>
+
+  <!-- =========================================================
+       9. JavaScript 인터랙션 로직 (Supabase 클라우드 DB 연동)
+       ========================================================= -->
+  <script>
+    // ---------------------------------------------------------
+    // 0. Supabase 클라이언트 초기화 및 익명 세션 관리
+    // ---------------------------------------------------------
+    const SUPABASE_URL = "https://pcyaploxjcszdcrqakng.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjeWFwbG94amNzemRjcnFha25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MDEyNDQsImV4cCI6MjEwNzk3NzI0NH0.2wk53oD1EwEw7Y5Y4il9DYQ43tfq0lRf9w0AMxlNCnA";
+    
+    // Supabase CDN의 window.supabase 전역 객체와 식별자 충돌 방지 (supabaseClient 사용)
+    const supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    // 개인 식별 정보(실명, 전화번호, 이메일)를 배제한 로컬 익명 사용자 ID
+    async function getOrCreateAnonymousUser() {
+      let userId = localStorage.getItem("gamza_anon_user_id");
+      if (!userId) {
+        userId = "00000000-0000-0000-0000-000000000001"; // 기본 시드 판매자 (포슬포슬감자)
+        localStorage.setItem("gamza_anon_user_id", userId);
+      }
+      return userId;
+    }
+
+    // 상대적 시간 포맷팅 헬퍼 (예: 방금 전, 12분 전, 3시간 전)
+    function formatTimeAgo(dateString) {
+      if (!dateString) return "방금 전";
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffSec = Math.floor((now - date) / 1000);
+      if (diffSec < 60) return "방금 전";
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin}분 전`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour}시간 전`;
+      const diffDay = Math.floor(diffHour / 24);
+      if (diffDay < 7) return `${diffDay}일 전`;
+      return date.toLocaleDateString("ko-KR", { month: "short", day: "numeric" });
+    }
+
+    // ---------------------------------------------------------
+    // A. 상태 변수 및 카테고리 정의 (초기 폴백 시드 데이터 즉시 탑재)
+    // ---------------------------------------------------------
+    const FALLBACK_PRODUCTS = [
+    {
+        "id": 1,
+        "title": "강원도 평창 직송 햇감자 10kg (포슬포슬 분나는 왕특품)",
+        "category": "기타",
+        "price": 18000,
+        "location": "역삼1동",
+        "timeAgo": "방금 전",
+        "status": "판매중",
+        "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80",
+        "description": "산지 직송으로 어제 수확한 특품 햇감자입니다. 분이 펄펄 나고 쪄먹거나 감자전 해먹으면 정말 꿀맛입니다! 10kg 한 박스 그대로 드립니다.",
+        "likes": 24,
+        "chats": 9,
+        "views": 142,
+        "seller": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "포슬포슬감자",
+            "location": "역삼1동",
+            "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80",
+            "temp": 42.5
+        }
+    },
+    {
+        "id": 2,
+        "title": "닌텐도 스위치 OLED 풀박스 (젤다 에디션 + 파우치)",
+        "category": "디지털기기",
+        "price": 310000,
+        "location": "서초2동",
+        "timeAgo": "방금 전",
+        "status": "판매중",
+        "image": "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=800&q=80",
+        "description": "젤다 엔딩 보고 보관만 해두어 배터리 상태 및 외관 S급입니다.\\n액정보호필름 붙어있고 정품 파우치와 충전기 전부 풀박스 구성입니다.\\n네고는 정중히 사양합니다!",
+        "likes": 29,
+        "chats": 8,
+        "views": 98,
+        "seller": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "name": "엔딩요정",
+            "location": "서초2동",
+            "avatar": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80",
+            "temp": 39.8
+        }
+    },
+    {
+        "id": 3,
+        "title": "포근한 원목 감성 2단 협탁 / 사이드 테이블",
+        "category": "가구/인테리어",
+        "price": 25000,
+        "location": "대치동",
+        "timeAgo": "방금 전",
+        "status": "예약중",
+        "image": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=800&q=80",
+        "description": "원목 느낌이 따뜻해서 침대 옆이나 소파 옆에 두기 좋습니다.\\n이사하게 되어 아쉽지만 내놓습니다. 승용차 뒷좌석에 넉넉히 실립니다.\\n현재 예약자분과 시간 조율 중입니다.",
+        "likes": 12,
+        "chats": 6,
+        "views": 76,
+        "seller": {
+            "id": "00000000-0000-0000-0000-000000000003",
+            "name": "나무늘보",
+            "location": "대치동",
+            "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+            "temp": 37.4
+        }
+    },
+    {
+        "id": 4,
+        "title": "감자처럼 따뜻한 웜베이지 오버핏 숏패딩 (L사이즈)",
+        "category": "의류",
+        "price": 45000,
+        "location": "삼성1동",
+        "timeAgo": "방금 전",
+        "status": "판매중",
+        "image": "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80",
+        "description": "따뜻한 웜베이지 색상으로 어디에나 잘 어울리는 숏패딩입니다.\\n덕다운 80:20 충전재로 한겨울에도 매우 가볍고 따뜻합니다.\\n실착 3회 미만으로 상태 깨끗합니다.",
+        "likes": 9,
+        "chats": 2,
+        "views": 54,
+        "seller": {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "name": "옷장정리중",
+            "location": "삼성1동",
+            "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+            "temp": 36.5
+        }
+    },
+    {
+        "id": 5,
+        "title": "필립스 대용량 디지털 에어프라이어 5.5L",
+        "category": "생활가전",
+        "price": 38000,
+        "location": "논현동",
+        "timeAgo": "방금 전",
+        "status": "거래 완료",
+        "image": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80",
+        "description": "군고구마, 감자튀김, 삼겹살 구울 때 최고입니다!\\n새 모델로 갈아타게 되어 저렴하게 올렸습니다.\\n깨끗하게 세척 완료한 상태입니다.",
+        "likes": 35,
+        "chats": 14,
+        "views": 210,
+        "seller": {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "name": "요리왕비룡",
+            "location": "논현동",
+            "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+            "temp": 51.2
+        }
+    }
+];
+
+    let productList = [...FALLBACK_PRODUCTS];
+    let selectedCategory = "전체";
+    let isAvailableOnly = false;
+    let searchQuery = "";
+    let activeDetailProduct = null;
+    let myLikedProductIds = new Set();
+    let editingProductId = null; // 수정 중인 상품 ID (null이면 신규 작성)
+
+    // Supabase Auth 상태 관리
+    let currentUser = null;
+    let currentUserProfile = null;
+    let currentAuthMode = 'login'; // 'login' | 'signup'
+    let pendingActionAfterLogin = null; // 로그인 후 자동 실행할 액션 (예: 'openWriteModal')
+
+    const CATEGORIES = [
+      { id: "전체", name: "전체", icon: "🥔" },
+      { id: "디지털기기", name: "디지털기기", icon: "📱" },
+      { id: "가구/인테리어", name: "가구/인테리어", icon: "🛋️" },
+      { id: "의류", name: "의류", icon: "👕" },
+      { id: "생활가전", name: "생활가전", icon: "🔌" },
+      { id: "도서/티켓", name: "도서/티켓", icon: "📚" },
+      { id: "기타", name: "기타", icon: "📦" }
+    ];
+
+    // ---------------------------------------------------------
+    // B. Supabase 데이터 통신 로직
+    // ---------------------------------------------------------
+    async function loadProductsFromSupabase() {
+      if (!supabaseClient) {
+        console.warn("Supabase 클라이언트가 초기화되지 않았습니다. 폴백 데이터를 사용합니다.");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('products')
+          .select(`
+            id,
+            seller_id,
+            title,
+            category,
+            price,
+            location,
+            status,
+            image_url,
+            description,
+            view_count,
+            like_count,
+            chat_count,
+            created_at,
+            profiles (
+              id,
+              nickname,
+              avatar_url,
+              verified_location,
+              manner_temperature
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error("Supabase 상품 목록 로드 실패:", error);
+          showToast("⚠️ 온라인 DB 동기화 대기 중 (기본 상품 목록 표시)");
+          return;
+        }
+
+        if (data && data.length > 0) {
+          productList = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            category: item.category,
+            price: item.price,
+            location: item.location,
+            timeAgo: formatTimeAgo(item.created_at),
+            status: item.status,
+            image: item.image_url,
+            description: item.description || "",
+            likes: item.like_count || 0,
+            chats: item.chat_count || 0,
+            views: item.view_count || 0,
+            seller_id: item.seller_id || item.profiles?.id,
+            seller: {
+              id: item.seller_id || item.profiles?.id,
+              name: item.profiles?.nickname || "감자이웃",
+              location: item.profiles?.verified_location || item.location,
+              avatar: item.profiles?.avatar_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80",
+              temp: Number(item.profiles?.manner_temperature) || 36.5
+            }
+          }));
+
+          renderProducts();
+        }
+      } catch (err) {
+        console.error("데이터 통신 중 오류:", err);
+      }
+    }
+
+    // 내가 찜한 목록 가져오기
+    async function loadMyLikes() {
+      if (!supabaseClient) return;
+      try {
+        const userId = await getOrCreateAnonymousUser();
+        const { data } = await supabaseClient
+          .from('product_likes')
+          .select('product_id')
+          .eq('user_id', userId);
+        
+        if (data) {
+          myLikedProductIds = new Set(data.map(d => String(d.product_id)));
+          renderProducts();
+        }
+      } catch (e) {
+        console.error("찜 목록 로드 실패:", e);
+      }
+    }
+
+    // 실시간(Realtime) 변경 구독
+    function setupRealtime() {
+      if (!supabaseClient) return;
+      supabaseClient
+        .channel('schema-db-changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'products' },
+          (payload) => {
+            console.log('실시간 데이터 변경 감지:', payload);
+            loadProductsFromSupabase();
+          }
+        )
+        .subscribe();
+    }
+
+    // ---------------------------------------------------------
+    // C. [화면 1] 렌더링 및 필터링 로직
+    // ---------------------------------------------------------
+    function initCategoryTabs() {
+      const container = document.getElementById("categoryTabs");
+      if (!container) return;
+      container.innerHTML = CATEGORIES.map(cat => `
+        <button 
+          type="button"
+          class="category-btn ${cat.id === selectedCategory ? 'active' : ''}" 
+          onclick="handleSelectCategory('${cat.id}')"
+        >
+          <span>${cat.icon}</span>
+          <span>${cat.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const badge = document.getElementById("productCountBadge");
+      const title = document.getElementById("currentCategoryTitle");
+      if (!grid || !badge || !title) return;
+
+      let filtered = productList.filter(item => {
+        if (selectedCategory !== "전체" && item.category !== selectedCategory) {
+          return false;
+        }
+        if (isAvailableOnly) {
+          const norm = (item.status || "").replace(/\s+/g, "");
+          if (norm === "거래완료") {
+            return false;
+          }
+        }
+        if (searchQuery.trim() !== "") {
+          const q = searchQuery.trim().toLowerCase();
+          const matchTitle = (item.title || "").toLowerCase().includes(q);
+          const matchDesc = (item.description || "").toLowerCase().includes(q);
+          const matchLoc = (item.location || "").toLowerCase().includes(q);
+          if (!matchTitle && !matchDesc && !matchLoc) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      title.textContent = selectedCategory === "전체" 
+        ? (searchQuery ? `'${searchQuery}' 검색 결과` : '전체 매물') 
+        : `${selectedCategory} 매물`;
+      badge.textContent = `${filtered.length}개`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🥔💨</div>
+            <div class="empty-state-text">조건에 맞는 상품이 없어요.</div>
+            <button type="button" class="btn btn-outline" onclick="resetAllFilters()">전체 목록 보기</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const normStatus = (item.status || "").replace(/\s+/g, "");
+        const statusClass = normStatus === "판매중" 
+          ? "status-selling" 
+          : (normStatus === "예약중" ? "status-reserved" : "status-sold");
+
+        const priceText = item.price === 0 ? "무료 나눔 🥔" : `${Number(item.price).toLocaleString()}원`;
+        const isSold = normStatus === "거래완료";
+        const isLiked = myLikedProductIds.has(String(item.id));
+
+        return `
+          <article class="product-card ${isSold ? 'sold' : ''}" onclick="openDetailModal('${item.id}')">
+            <div class="card-thumb-wrapper">
+              <img class="card-thumb-img" src="${item.image}" alt="${item.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80'">
+              <div class="card-badges">
+                <span class="status-badge ${statusClass}">${item.status}</span>
+                <span class="category-chip">${item.category}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title" title="${item.title}">${item.title}</h3>
+              <div class="card-meta">
+                <span class="card-author">${item.seller?.name || '감자이웃'}</span>
+                <span class="dot">·</span>
+                <span>${item.location}</span>
+                <span class="dot">·</span>
+                <span>${item.timeAgo}</span>
+              </div>
+              <div class="card-footer-row">
+                <div class="card-price ${item.price === 0 ? 'free' : ''}">${priceText}</div>
+                <div class="card-stats">
+                  <span style="${isLiked ? 'color: var(--seed-color-fg-brand); font-weight:700;' : ''}">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    ${item.likes || 0}
+                  </span>
+                  <span>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    ${item.chats || 0}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function handleSelectCategory(catId) {
+      selectedCategory = catId;
+      initCategoryTabs();
+      renderProducts();
+    }
+
+    function handleAvailableToggle(checked) {
+      isAvailableOnly = checked;
+      renderProducts();
+      showToast(checked ? "🌱 거래 가능한 상품만 모아봅니다" : "전체 상태의 상품을 표시합니다");
+    }
+
+    function executeSearch() {
+      const input = document.getElementById("searchInput");
+      searchQuery = input ? input.value : "";
+      renderProducts();
+      if (searchQuery.trim()) {
+        showToast(`🔍 '${searchQuery}' 검색 결과입니다`);
+      }
+    }
+
+    function handleSearchKeyUp(event) {
+      if (event.key === "Enter") {
+        executeSearch();
+      }
+    }
+
+    function resetAllFilters() {
+      selectedCategory = "전체";
+      isAvailableOnly = false;
+      searchQuery = "";
+      const input = document.getElementById("searchInput");
+      if (input) input.value = "";
+      const toggle = document.getElementById("availableOnlyToggle");
+      if (toggle) toggle.checked = false;
+      initCategoryTabs();
+      renderProducts();
+      showToast("🥔 전체 목록으로 돌아왔습니다");
+    }
+
+    // ---------------------------------------------------------
+    // C-1. Supabase Auth & Profile 관리 메서드
+    // ---------------------------------------------------------
+    async function fetchUserProfile(userId) {
+      if (!supabaseClient || !userId) return null;
+      try {
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        if (!error && data) return data;
+      } catch (e) {
+        console.error("프로필 조회 예외:", e);
+      }
+      return null;
+    }
+
+    async function ensureUserProfile(user, preferredNickname = "") {
+      if (!supabaseClient || !user) return null;
+      const nick = preferredNickname || user.user_metadata?.nickname || (user.email ? user.email.split('@')[0] : '감자이웃');
+      try {
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            nickname: nick,
+            verified_location: '역삼1동',
+            manner_temperature: 36.5
+          })
+          .select()
+          .maybeSingle();
+        if (!error && data) return data;
+      } catch (e) {
+        console.error("프로필 보장 생성 에러:", e);
+      }
+      return { id: user.id, nickname: nick, verified_location: '역삼1동', manner_temperature: 36.5 };
+    }
+
+    function updateAuthUI(user, profile) {
+      currentUser = user;
+      currentUserProfile = profile;
+      const guestGroup = document.getElementById("guestActionGroup");
+      const userGroup = document.getElementById("userActionGroup");
+      const nicknameText = document.getElementById("headerUserNickname");
+
+      if (user) {
+        if (guestGroup) guestGroup.style.display = "none";
+        if (userGroup) userGroup.style.display = "flex";
+        const displayName = profile?.nickname || user.user_metadata?.nickname || (user.email ? user.email.split('@')[0] : '감자이웃');
+        if (nicknameText) nicknameText.textContent = displayName;
+      } else {
+        if (guestGroup) guestGroup.style.display = "flex";
+        if (userGroup) userGroup.style.display = "none";
+        if (nicknameText) nicknameText.textContent = "";
+      }
+    }
+
+    function openAuthModal(mode = 'login') {
+      switchAuthMode(mode);
+      const errBox = document.getElementById("authErrorMessage");
+      if (errBox) errBox.style.display = "none";
+      const overlay = document.getElementById("authModalOverlay");
+      if (overlay) overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => {
+        const targetInput = mode === 'signup' 
+          ? document.getElementById("authNicknameInput") 
+          : document.getElementById("authEmailInput");
+        if (targetInput) targetInput.focus();
+      }, 100);
+    }
+
+    function closeAuthModal() {
+      const overlay = document.getElementById("authModalOverlay");
+      if (overlay) overlay.classList.remove("active");
+      document.body.style.overflow = "";
+      const form = document.getElementById("authForm");
+      if (form) form.reset();
+      const errBox = document.getElementById("authErrorMessage");
+      if (errBox) errBox.style.display = "none";
+    }
+
+    function handleAuthOverlayClick(event) {
+      if (event.target === document.getElementById("authModalOverlay")) {
+        closeAuthModal();
+      }
+    }
+
+    function switchAuthMode(mode) {
+      currentAuthMode = mode;
+      const tabLogin = document.getElementById("tabBtnLogin");
+      const tabSignup = document.getElementById("tabBtnSignup");
+      const groupNick = document.getElementById("groupSignupNickname");
+      const nickInput = document.getElementById("authNicknameInput");
+      const title = document.getElementById("authModalTitle");
+      const subtitle = document.getElementById("authModalSubtitle");
+      const submitBtn = document.getElementById("btnAuthSubmit");
+      const switchText = document.getElementById("authSwitchText");
+      const switchLink = document.getElementById("authSwitchLink");
+      const errBox = document.getElementById("authErrorMessage");
+      if (errBox) errBox.style.display = "none";
+
+      if (mode === 'signup') {
+        if (tabLogin) tabLogin.classList.remove("active");
+        if (tabSignup) tabSignup.classList.add("active");
+        if (groupNick) groupNick.style.display = "flex";
+        if (nickInput) nickInput.required = true;
+        if (title) title.textContent = "감자마을 회원가입";
+        if (subtitle) subtitle.textContent = "닉네임과 이메일로 간편하게 가입하세요";
+        if (submitBtn) submitBtn.textContent = "가입하고 시작하기";
+        if (switchText) switchText.textContent = "이미 감자 계정이 있으신가요?";
+        if (switchLink) switchLink.textContent = "로그인";
+      } else {
+        if (tabLogin) tabLogin.classList.add("active");
+        if (tabSignup) tabSignup.classList.remove("active");
+        if (groupNick) groupNick.style.display = "none";
+        if (nickInput) { nickInput.required = false; nickInput.value = ""; }
+        if (title) title.textContent = "감자마을 로그인";
+        if (subtitle) subtitle.textContent = "우리 동네 따뜻한 중고거래를 시작해보세요";
+        if (submitBtn) submitBtn.textContent = "로그인하기";
+        if (switchText) switchText.textContent = "아직 감자 계정이 없으신가요?";
+        if (switchLink) switchLink.textContent = "회원가입";
+      }
+    }
+
+    function toggleAuthMode() {
+      switchAuthMode(currentAuthMode === 'login' ? 'signup' : 'login');
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      if (!supabaseClient) {
+        showToast("⚠️ Supabase가 연결되지 않았습니다.");
+        return;
+      }
+
+      const email = document.getElementById("authEmailInput").value.trim();
+      const password = document.getElementById("authPasswordInput").value.trim();
+      const nicknameInput = document.getElementById("authNicknameInput");
+      const nickname = nicknameInput ? nicknameInput.value.trim() : "";
+      const submitBtn = document.getElementById("btnAuthSubmit");
+      const errBox = document.getElementById("authErrorMessage");
+      if (errBox) errBox.style.display = "none";
+
+      if (currentAuthMode === 'signup' && !nickname) {
+        if (errBox) {
+          errBox.textContent = "닉네임을 필수로 입력해주세요!";
+          errBox.style.display = "block";
+        }
+        return;
+      }
+
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = currentAuthMode === 'signup' ? "가입 처리 중..." : "로그인 중...";
+
+      try {
+        if (currentAuthMode === 'signup') {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { nickname }
+            }
+          });
+
+          if (error) throw error;
+
+          const user = data?.user;
+          if (user) {
+            const profile = await ensureUserProfile(user, nickname);
+            if (!data.session) {
+              // 이메일 확인 설정 등의 경우 대비 자동 로그인 시도
+              const autoLogin = await supabaseClient.auth.signInWithPassword({ email, password });
+              if (autoLogin.data?.session) {
+                updateAuthUI(autoLogin.data.user, profile);
+                showToast(`🎉 환영합니다, ${nickname}님!`);
+                closeAuthModal();
+                checkPendingActionAfterAuth();
+                return;
+              } else {
+                showToast("✉️ 가입 환영 메일을 확인하신 후 로그인해주세요!");
+                switchAuthMode('login');
+                return;
+              }
+            } else {
+              updateAuthUI(user, profile);
+              showToast(`🎉 감자마을 가입을 환영합니다, ${nickname}님!`);
+              closeAuthModal();
+              checkPendingActionAfterAuth();
+              return;
+            }
+          }
+          showToast("🎉 회원가입 완료! 로그인해주세요.");
+          switchAuthMode('login');
+        } else {
+          // 로그인 모드
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) throw error;
+
+          const user = data.user;
+          let profile = await fetchUserProfile(user.id);
+          if (!profile) {
+            profile = await ensureUserProfile(user);
+          }
+          updateAuthUI(user, profile);
+          const displayName = profile?.nickname || user.user_metadata?.nickname || "감자이웃";
+          showToast(`👋 어서오세요, ${displayName}님!`);
+          closeAuthModal();
+          checkPendingActionAfterAuth();
+        }
+      } catch (err) {
+        console.error("인증 에러:", err);
+        if (errBox) {
+          let msg = err.message || "오류가 발생했습니다.";
+          if (msg.includes("Invalid login credentials")) msg = "이메일 또는 비밀번호가 올바르지 않습니다.";
+          else if (msg.includes("User already registered")) msg = "이미 가입된 이메일 주소입니다. 로그인해주세요.";
+          else if (msg.includes("Password should be at least")) msg = "비밀번호는 최소 6자 이상이어야 합니다.";
+          errBox.textContent = msg;
+          errBox.style.display = "block";
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+    }
+
+    function checkPendingActionAfterAuth() {
+      if (pendingActionAfterLogin === 'openWriteModal') {
+        pendingActionAfterLogin = null;
+        setTimeout(() => {
+          openWriteModal();
+        }, 200);
+      }
+    }
+
+    async function handleLogout() {
+      if (!supabaseClient) return;
+      try {
+        await supabaseClient.auth.signOut();
+        updateAuthUI(null, null);
+        showToast("👋 안전하게 로그아웃되었습니다.");
+      } catch (e) {
+        console.error("로그아웃 실패:", e);
+      }
+    }
+
+    // [글쓰기] 버튼 클릭 인터셉터 (비로그인 시 로그인 모달 유도)
+    function handleWriteButtonClick() {
+      if (currentUser) {
+        openWriteModal();
+      } else {
+        pendingActionAfterLogin = 'openWriteModal';
+        showToast("🔒 글쓰기는 로그인 후 이용할 수 있어요.");
+        openAuthModal('login');
+      }
+    }
+
+    async function initAuth() {
+      if (!supabaseClient) return;
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          let profile = await fetchUserProfile(session.user.id);
+          if (!profile) profile = await ensureUserProfile(session.user);
+          updateAuthUI(session.user, profile);
+        }
+
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session?.user) {
+            let profile = await fetchUserProfile(session.user.id);
+            if (!profile) profile = await ensureUserProfile(session.user);
+            updateAuthUI(session.user, profile);
+          } else if (event === 'SIGNED_OUT') {
+            updateAuthUI(null, null);
+          }
+        });
+      } catch (e) {
+        console.error("세션 초기화 실패:", e);
+      }
+    }
+
+    // ---------------------------------------------------------
+    // D. [화면 2] 상세 팝업 모달 인터랙션 & 조회수/찜 동기화
+    // ---------------------------------------------------------
+    async function openDetailModal(productId) {
+      const item = productList.find(p => String(p.id) === String(productId));
+      if (!item) return;
+
+      activeDetailProduct = item;
+
+      // Supabase 조회수 카운트 1 증가
+      if (supabaseClient) {
+        supabaseClient
+          .from('products')
+          .update({ view_count: (item.views || 0) + 1 })
+          .eq('id', item.id)
+          .then();
+        item.views = (item.views || 0) + 1;
+      }
+
+      document.getElementById("detailHeroImage").src = item.image;
+      document.getElementById("detailTitle").textContent = item.title;
+      document.getElementById("detailLocation").textContent = item.location;
+      document.getElementById("detailTimeAgo").textContent = item.timeAgo;
+      document.getElementById("detailCategoryTag").textContent = item.category;
+
+      const priceText = item.price === 0 ? "무료 나눔 🥔" : `${Number(item.price).toLocaleString()}원`;
+      document.getElementById("detailPrice").textContent = priceText;
+
+      const statusBadge = document.getElementById("detailStatusBadge");
+      statusBadge.textContent = item.status;
+      statusBadge.className = "detail-status-pill " + (
+        item.status === "판매중" ? "status-selling" : item.status === "예약중" ? "status-reserved" : "status-sold"
+      );
+
+      // 판매자 정보 및 SEED 매너온도 계산
+      const seller = item.seller || {
+        name: "포슬포슬감자",
+        location: item.location,
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80",
+        temp: 36.5
+      };
+
+      document.getElementById("detailSellerName").textContent = seller.name;
+      document.getElementById("detailSellerLocation").textContent = seller.location;
+      document.getElementById("detailSellerAvatar").src = seller.avatar;
+
+      // 매너온도 레벨별 색상/이모지 연동 (SEED Manner Temp 스펙)
+      const tempVal = Number(seller.temp) || 36.5;
+      const tempElem = document.getElementById("detailSellerTemp");
+      const emojiElem = document.getElementById("detailSellerEmoji");
+      const fillElem = document.getElementById("detailSellerTempFill");
+
+      tempElem.textContent = `${tempVal}℃`;
+      fillElem.style.width = `${Math.min(Math.max((tempVal / 100) * 100, 10), 100)}%`;
+
+      if (tempVal >= 50.0) {
+        tempElem.className = "manner-temp-value temp-level-red";
+        fillElem.className = "manner-temp-fill temp-fill-red";
+        emojiElem.textContent = "😎";
+      } else if (tempVal >= 40.0) {
+        tempElem.className = "manner-temp-value temp-level-orange";
+        fillElem.className = "manner-temp-fill temp-fill-orange";
+        emojiElem.textContent = "😄";
+      } else {
+        tempElem.className = "manner-temp-value temp-level-blue";
+        fillElem.className = "manner-temp-fill temp-fill-blue";
+        emojiElem.textContent = "😊";
+      }
+
+      document.getElementById("detailDescription").textContent = item.description;
+
+      const heartBtn = document.getElementById("btnHeartInterest");
+      const isLiked = myLikedProductIds.has(String(item.id));
+      if (heartBtn) {
+        if (isLiked) {
+          heartBtn.classList.add("active");
+        } else {
+          heartBtn.classList.remove("active");
+        }
+      }
+
+      // 작성자 여부 판단 및 UI 전환
+      const isOwner = isCurrentUserProductOwner(item);
+      const ownerBox = document.getElementById("ownerStatusBox");
+      const ownerFooter = document.getElementById("ownerActionsFooter");
+      const buyerFooter = document.getElementById("buyerActionsFooter");
+
+      if (ownerBox) ownerBox.style.display = isOwner ? "flex" : "none";
+      if (ownerFooter) ownerFooter.style.display = isOwner ? "flex" : "none";
+      if (buyerFooter) buyerFooter.style.display = isOwner ? "none" : "flex";
+
+      updateDetailStatusButtons(item.status);
+
+      const overlay = document.getElementById("detailModalOverlay");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    // 작성자 본인 확인 헬퍼
+    function isCurrentUserProductOwner(product) {
+      if (!product) return false;
+      const productSellerId = String(product.seller_id || product.seller?.id || '');
+      if (!productSellerId) return false;
+
+      // 1) 로그인된 회원인 경우
+      if (currentUser && String(currentUser.id) === productSellerId) {
+        return true;
+      }
+
+      // 2) 비로그인/익명 작성자인 경우
+      const anonId = localStorage.getItem("gamza_anon_user_id");
+      if (!currentUser && anonId && String(anonId) === productSellerId) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // 상세 모달 내 상태 변경 버튼 active 클래스 갱신
+    function updateDetailStatusButtons(status) {
+      const norm = (status || "").replace(/\s+/g, "");
+      const btnSelling = document.getElementById("optBtnSelling");
+      const btnReserved = document.getElementById("optBtnReserved");
+      const btnSold = document.getElementById("optBtnSold");
+
+      if (btnSelling) btnSelling.classList.toggle("active", norm === "판매중");
+      if (btnReserved) btnReserved.classList.toggle("active", norm === "예약중");
+      if (btnSold) btnSold.classList.toggle("active", norm === "거래완료");
+    }
+
+    // 빠른 상태 변경 (판매중 / 예약중 / 거래 완료)
+    async function handleQuickStatusChange(newStatus) {
+      if (!activeDetailProduct) return;
+      const productId = activeDetailProduct.id;
+
+      activeDetailProduct.status = newStatus;
+
+      // 로컬 목록 동기화
+      const localItem = productList.find(p => String(p.id) === String(productId));
+      if (localItem) {
+        localItem.status = newStatus;
+      }
+
+      // 상세 모달 상태 배지 즉시 갱신
+      const statusBadge = document.getElementById("detailStatusBadge");
+      if (statusBadge) {
+        statusBadge.textContent = newStatus;
+        const norm = newStatus.replace(/\s+/g, "");
+        statusBadge.className = "detail-status-pill " + (
+          norm === "판매중" ? "status-selling" : (norm === "예약중" ? "status-reserved" : "status-sold")
+        );
+      }
+
+      // 상세 모달 버튼 active 상태 갱신
+      updateDetailStatusButtons(newStatus);
+
+      // 목록 카드 렌더링 (상태 배지 및 흐리게 표시 동기화)
+      renderProducts();
+
+      // Supabase DB 상태 업데이트
+      if (supabaseClient) {
+        try {
+          const { error } = await supabaseClient
+            .from('products')
+            .update({ status: newStatus, updated_at: new Date().toISOString() })
+            .eq('id', productId);
+
+          if (error) {
+            console.error("Supabase 상태 업데이트 실패:", error);
+            showToast(`⚠️ DB 저장 실패: ${error.message}`);
+            return;
+          }
+        } catch (err) {
+          console.error("상태 업데이트 통신 예외:", err);
+        }
+      }
+
+      showToast(`🥔 상태가 '${newStatus}'(으)로 변경 및 저장되었습니다.`);
+    }
+
+    // 게시글 삭제 처리
+    async function handleDeleteProduct(productId) {
+      if (!productId) return;
+      const confirmDelete = confirm("정말 이 게시글을 삭제하시겠습니까?\n삭제된 글은 복구할 수 없습니다.");
+      if (!confirmDelete) return;
+
+      showToast("⏳ 게시글을 삭제하고 있습니다...");
+
+      if (supabaseClient) {
+        try {
+          const { error } = await supabaseClient
+            .from('products')
+            .delete()
+            .eq('id', productId);
+
+          if (error) {
+            console.error("Supabase 삭제 실패:", error);
+            showToast(`❌ 삭제 실패: ${error.message}`);
+            return;
+          }
+        } catch (err) {
+          console.error("게시글 삭제 예외:", err);
+        }
+      }
+
+      // 로컬 목록에서 제거
+      productList = productList.filter(p => String(p.id) !== String(productId));
+      closeDetailModal();
+      renderProducts();
+      showToast("🗑️ 게시글이 성공적으로 삭제되었습니다.");
+    }
+
+    // 게시글 수정 모달 열기
+    function openEditModal(productId) {
+      const item = productList.find(p => String(p.id) === String(productId));
+      if (!item) return;
+
+      editingProductId = productId;
+
+      // 모달 제목 및 버튼 변경
+      const heading = document.getElementById("writeModalHeading");
+      const submitBtn = document.getElementById("btnWriteSubmit");
+      if (heading) heading.textContent = "게시글 수정";
+      if (submitBtn) submitBtn.textContent = "수정 완료";
+
+      // 폼 데이터 채우기
+      const inputTitle = document.getElementById("inputTitle");
+      const selectCategory = document.getElementById("selectCategory");
+      const inputPrice = document.getElementById("inputPrice");
+      const inputLocation = document.getElementById("inputLocation");
+      const textareaDescription = document.getElementById("textareaDescription");
+      const inputImageUrl = document.getElementById("inputImageUrl");
+      const descCount = document.getElementById("indexDescCharCount");
+
+      if (inputTitle) inputTitle.value = item.title || "";
+      if (selectCategory) selectCategory.value = item.category || "";
+      if (inputPrice) inputPrice.value = (item.price !== undefined) ? item.price : "";
+      if (inputLocation) inputLocation.value = item.location || "";
+      if (textareaDescription) {
+        textareaDescription.value = item.description || "";
+        if (descCount) descCount.textContent = `${(item.description || "").length}/500`;
+      }
+
+      if (inputImageUrl) {
+        inputImageUrl.value = (item.image && !item.image.startsWith("data:")) ? item.image : "";
+      }
+      handleImageUrlInput(item.image || "");
+
+      // 상태 라디오 선택
+      const norm = (item.status || "판매중").replace(/\s+/g, "");
+      const targetVal = norm === "예약중" ? "예약중" : (norm === "거래완료" ? "거래 완료" : "판매중");
+      const radio = document.querySelector(`input[name="productStatus"][value="${targetVal}"]`);
+      if (radio) radio.checked = true;
+
+      // 상세 팝업 닫고 글쓰기/수정 모달 띄우기
+      closeDetailModal();
+      openWriteModal();
+    }
+
+    function closeDetailModal() {
+      const overlay = document.getElementById("detailModalOverlay");
+      if (overlay) overlay.classList.remove("active");
+      document.body.style.overflow = "";
+      activeDetailProduct = null;
+    }
+
+    function handleDetailOverlayClick(event) {
+      if (event.target === document.getElementById("detailModalOverlay")) {
+        closeDetailModal();
+      }
+    }
+
+    async function toggleInterest() {
+      if (!activeDetailProduct) return;
+      const heartBtn = document.getElementById("btnHeartInterest");
+      const isLiked = heartBtn.classList.toggle("active");
+      const productId = activeDetailProduct.id;
+      const strId = String(productId);
+
+      if (isLiked) {
+        myLikedProductIds.add(strId);
+        activeDetailProduct.likes = (activeDetailProduct.likes || 0) + 1;
+      } else {
+        myLikedProductIds.delete(strId);
+        activeDetailProduct.likes = Math.max(0, (activeDetailProduct.likes || 1) - 1);
+      }
+
+      renderProducts();
+      showToast(isLiked ? "❤️ 관심 목록에 추가되었습니다!" : "🤍 관심 목록에서 제거되었습니다.");
+
+      // Supabase product_likes 및 like_count 업데이트
+      if (supabaseClient) {
+        try {
+          const userId = await getOrCreateAnonymousUser();
+          if (isLiked) {
+            await supabaseClient.from('product_likes').insert([{ product_id: productId, user_id: userId }]);
+          } else {
+            await supabaseClient.from('product_likes').delete().eq('product_id', productId).eq('user_id', userId);
+          }
+          await supabaseClient.from('products').update({ like_count: activeDetailProduct.likes }).eq('id', productId);
+        } catch (e) {
+          console.error("관심 정보 Supabase 동기화 오류:", e);
+        }
+      }
+    }
+
+    async function startChatPlaceholder() {
+      if (!activeDetailProduct) return;
+      const sellerName = activeDetailProduct.seller?.name || '판매자';
+      showToast(`💬 '${sellerName}'님과의 채팅방을 생성하는 중...`);
+
+      if (supabaseClient && activeDetailProduct.seller?.id) {
+        try {
+          const buyerId = await getOrCreateAnonymousUser();
+          await supabaseClient.from('chat_rooms').insert([{
+            product_id: activeDetailProduct.id,
+            buyer_id: buyerId,
+            seller_id: activeDetailProduct.seller.id,
+            last_message: '거래 문의가 시작되었습니다.'
+          }]);
+          // chat_count 증가
+          await supabaseClient.from('products').update({ chat_count: (activeDetailProduct.chats || 0) + 1 }).eq('id', activeDetailProduct.id);
+          activeDetailProduct.chats = (activeDetailProduct.chats || 0) + 1;
+          renderProducts();
+          showToast(`💬 '${sellerName}'님과의 채팅방이 개설되었습니다!`);
+        } catch (e) {
+          console.error("채팅방 생성 에러:", e);
+        }
+      } else {
+        showToast(`💬 '${sellerName}'님과의 채팅방이 곧 준비됩니다!`);
+      }
+    }
+
+    // ---------------------------------------------------------
+    // E. [화면 3] 글쓰기 모달 폼 & Supabase INSERT 연동
+    // ---------------------------------------------------------
+    function openWriteModal() {
+      // 신규 등록 모드인 경우 폼 초기화
+      if (!editingProductId) {
+        const heading = document.getElementById("writeModalHeading");
+        const submitBtn = document.getElementById("btnWriteSubmit");
+        if (heading) heading.textContent = "내 물건 팔기";
+        if (submitBtn) submitBtn.textContent = "작성 완료";
+        const form = document.getElementById("writeProductForm");
+        if (form) form.reset();
+        handleImageUrlInput("");
+        const descCount = document.getElementById("indexDescCharCount");
+        if (descCount) descCount.textContent = "0/500";
+      }
+
+      const overlay = document.getElementById("writeModalOverlay");
+      if (overlay) overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeWriteModal() {
+      const overlay = document.getElementById("writeModalOverlay");
+      if (overlay) overlay.classList.remove("active");
+      document.body.style.overflow = "";
+      editingProductId = null; // 수정 모드 초기화
+    }
+
+    function handleWriteOverlayClick(event) {
+      if (event.target === document.getElementById("writeModalOverlay")) {
+        closeWriteModal();
+      }
+    }
+
+    function handleImageUrlInput(url) {
+      const previewImg = document.getElementById("writePreviewImg");
+      const icon = document.getElementById("previewPlaceholderIcon");
+      if (!previewImg || !icon) return;
+      if (url && url.trim()) {
+        previewImg.src = url;
+        previewImg.style.display = "block";
+        icon.style.display = "none";
+      } else {
+        previewImg.style.display = "none";
+        icon.style.display = "block";
+      }
+    }
+
+    function handleFileInput(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        handleImageUrlInput(evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handleProductSubmit(event) {
+      event.preventDefault();
+
+      const title = document.getElementById("inputTitle").value.trim();
+      const category = document.getElementById("selectCategory").value;
+      const price = parseInt(document.getElementById("inputPrice").value, 10) || 0;
+      const location = document.getElementById("inputLocation").value.trim();
+      const description = document.getElementById("textareaDescription").value.trim();
+
+      const statusRadio = document.querySelector('input[name="productStatus"]:checked');
+      const status = statusRadio ? statusRadio.value : "판매중";
+
+      let image = document.getElementById("inputImageUrl").value.trim();
+      const previewImg = document.getElementById("writePreviewImg");
+      if (!image && previewImg && previewImg.style.display === "block" && previewImg.src) {
+        image = previewImg.src;
+      }
+      if (!image) {
+        image = "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80";
+      }
+
+      if (description.length > 500) {
+        showToast("⚠️ 자세한 설명은 최대 500자까지 작성할 수 있습니다.");
+        return;
+      }
+
+      // [수정 모드 분기]
+      if (editingProductId) {
+        showToast("⏳ 수파베이스에 수정 내용을 저장하고 있어요...");
+
+        const updatePayload = {
+          title,
+          category,
+          price,
+          location,
+          status,
+          image_url: image,
+          description,
+          is_free_share: price === 0,
+          updated_at: new Date().toISOString()
+        };
+
+        if (supabaseClient) {
+          try {
+            const { error } = await supabaseClient
+              .from('products')
+              .update(updatePayload)
+              .eq('id', editingProductId);
+
+            if (error) {
+              console.error("Supabase 수정 실패:", error);
+              showToast(`❌ 수정 실패: ${error.message}`);
+              return;
+            }
+          } catch (err) {
+            console.error("수정 통신 예외:", err);
+          }
+        }
+
+        // 로컬 productList 갱신
+        const localItem = productList.find(p => String(p.id) === String(editingProductId));
+        if (localItem) {
+          localItem.title = title;
+          localItem.category = category;
+          localItem.price = price;
+          localItem.location = location;
+          localItem.status = status;
+          localItem.image = image;
+          localItem.description = description;
+        }
+
+        const finishedId = editingProductId;
+        closeWriteModal();
+        renderProducts();
+        openDetailModal(finishedId); // 수정된 상세 화면 즉시 다시 오픈
+        showToast(`🎉 게시글이 성공적으로 수정되었습니다!`);
+        return;
+      }
+
+      showToast("⏳ 수파베이스에 새 상품을 저장하고 있어요...");
+
+      // 로그인 사용자가 있으면 currentUser.id, 없으면 로컬 익명 ID 사용
+      let sellerId = currentUser ? currentUser.id : await getOrCreateAnonymousUser();
+      if (currentUser && !currentUserProfile) {
+        currentUserProfile = await fetchUserProfile(currentUser.id) || await ensureUserProfile(currentUser);
+      }
+
+      const insertPayload = {
+        seller_id: sellerId,
+        title,
+        category,
+        price,
+        location,
+        status,
+        image_url: image,
+        description,
+        is_free_share: price === 0,
+        is_negotiable: false
+      };
+
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('products')
+            .insert([insertPayload])
+            .select();
+
+          if (error) {
+            console.error("Supabase 등록 실패:", error);
+            showToast(`❌ 등록 실패: ${error.message}`);
+            return;
+          }
+
+          showToast(`🎉 '${title.substring(0, 14)}...' 상품이 수파베이스에 안전하게 등록되었습니다!`);
+          
+          // 폼 리셋 및 닫기
+          document.getElementById("writeProductForm").reset();
+          const indexDescCount = document.getElementById("indexDescCharCount");
+          if (indexDescCount) indexDescCount.textContent = "0/500";
+          handleImageUrlInput("");
+          closeWriteModal();
+
+          // 최신 목록 다시 로드
+          await loadProductsFromSupabase();
+          return;
+        } catch (err) {
+          console.error("등록 중 예외 발생:", err);
+        }
+      }
+
+      // 오프라인 폴백 처리
+      const newProduct = {
+        id: Date.now(),
+        title,
+        category,
+        price,
+        location,
+        timeAgo: "방금 전",
+        status,
+        image,
+        description,
+        likes: 0,
+        chats: 0,
+        seller: {
+          id: sellerId,
+          name: currentUserProfile?.nickname || (currentUser?.email ? currentUser.email.split('@')[0] : "포슬포슬감자"),
+          location,
+          avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80",
+          temp: 36.5
+        }
+      };
+
+      productList.unshift(newProduct);
+      renderProducts();
+      document.getElementById("writeProductForm").reset();
+      handleImageUrlInput("");
+      closeWriteModal();
+      showToast(`🎉 상품이 로컬에 등록되었습니다!`);
+    }
+
+    // ---------------------------------------------------------
+    // F. SEED Snackbar (토스트 알림 유틸리티)
+    // ---------------------------------------------------------
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById("gamzaToast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeDetailModal();
+        closeWriteModal();
+        closeAuthModal();
+      }
+    });
+
+    // ---------------------------------------------------------
+    // G. 초기화 실행 (즉시 동기 렌더링 + 비동기 Supabase 동기화)
+    // ---------------------------------------------------------
+    function initGamzaApp() {
+      initAuth(); // 세션 복원 및 인증 상태 리스너 가동
+      initCategoryTabs();
+      renderProducts(); // 즉시 폴백 데이터로 렌더링 (0ms 로딩)
+      loadMyLikes();
+      loadProductsFromSupabase(); // Supabase 비동기 최신화
+      setupRealtime();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initGamzaApp);
+    } else {
+      initGamzaApp();
+    }
+  </script>
+
+</body>
+</html>
