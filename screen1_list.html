@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>감자 마켓 - 따뜻한 이웃간 중고 거래</title>
+  <!-- Google Fonts for modern Korean typography -->
+  <!-- Pretendard 웹 폰트 (Seed Design 표준 폰트) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+
+  <style>
+    /* =========================================================
+       1. SEED DESIGN SYSTEM 파운데이션 토큰 (seed-design.io)
+       ========================================================= */
+    :root {
+      /* Brand Tokens */
+      --seed-color-fg-brand: #ff6600;
+      --seed-color-bg-brand-solid: #ff6600;
+      --seed-color-bg-brand-solid-pressed: #e14d00;
+      --seed-color-bg-brand-weak: #fff2ec;
+      --seed-color-stroke-brand-solid: #ff6600;
+      --seed-color-stroke-brand-weak: #ffd5c0;
+
+      /* Neutral Layer & Surface Tokens */
+      --seed-color-bg-layer-basement: #f7f8f9;  /* Gray-100 */
+      --seed-color-bg-layer-default: #ffffff;   /* Gray-00 */
+      --seed-color-bg-neutral-weak: #f3f4f5;    /* Gray-200 */
+      --seed-color-bg-neutral-weak-pressed: #eeeff1; /* Gray-300 */
+      --seed-color-bg-neutral-solid: #1a1c20;   /* Gray-1000 */
+
+      /* Neutral Foreground (Text / Icons) */
+      --seed-color-fg-neutral: #1a1c20;         /* Gray-1000 */
+      --seed-color-fg-neutral-muted: #868b94;   /* Gray-700 */
+      --seed-color-fg-neutral-subtle: #b0b3ba;  /* Gray-600 */
+      --seed-color-fg-on-brand-solid: #ffffff;
+      --seed-color-fg-on-neutral-solid: #ffffff;
+
+      /* Stroke / Border Tokens */
+      --seed-color-stroke-neutral-weak: #eeeff1;
+      --seed-color-stroke-neutral: #dcdee3;
+      --seed-color-stroke-neutral-muted: #d1d3d8;
+      --seed-color-stroke-focus-ring: #ff6600;
+
+      /* Semantic Status Roles */
+      --seed-color-positive: #079171;
+      --seed-color-positive-bg: #edfaf6;
+      --seed-color-warning: #9b7821;
+      --seed-color-warning-bg: #fff7de;
+      --seed-color-critical: #ca1d13;
+      --seed-color-critical-bg: #fdf0f0;
+
+      /* Radius Tokens */
+      --seed-radius-r1: 4px;
+      --seed-radius-r2: 8px;
+      --seed-radius-r3: 12px;
+      --seed-radius-r4: 16px;
+      --seed-radius-full: 9999px;
+
+      /* Elevation / Shadows */
+      --seed-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+      --seed-shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+      --seed-shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+      --seed-font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --seed-duration-normal: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--seed-font-family);
+      background-color: var(--seed-color-bg-layer-basement);
+      color: var(--seed-color-fg-neutral);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* =========================================================
+       Header Component (SEED Top Navigation)
+       ========================================================= */
+    .gamza-header {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--seed-color-stroke-neutral-weak);
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    /* Logo */
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-logo .potato-icon {
+      font-size: 1.85rem;
+      line-height: 1;
+      transition: transform var(--seed-duration-normal);
+      display: inline-block;
+    }
+
+    .brand-logo:hover .potato-icon {
+      transform: scale(1.1) rotate(-6deg);
+    }
+
+    .brand-logo .brand-text {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--seed-color-fg-brand);
+      letter-spacing: -0.03em;
+    }
+
+    .brand-logo .brand-badge {
+      font-size: 0.72rem;
+      background-color: var(--seed-color-bg-brand-weak);
+      color: var(--seed-color-fg-brand);
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-full);
+      border: 1px solid var(--seed-color-stroke-brand-weak);
+    }
+
+    /* Search Bar */
+    .search-wrapper {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-input-box {
+      width: 100%;
+      height: 42px;
+      background-color: var(--seed-color-bg-neutral-weak);
+      border: 1.5px solid transparent;
+      border-radius: var(--seed-radius-full);
+      padding: 0 44px 0 1.15rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--seed-color-fg-neutral);
+      outline: none;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .search-input-box::placeholder {
+      color: var(--seed-color-fg-neutral-subtle);
+    }
+
+    .search-input-box:focus {
+      background-color: var(--seed-color-bg-layer-default);
+      border-color: var(--seed-color-stroke-focus-ring);
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--seed-radius-full);
+      border: none;
+      background: transparent;
+      color: var(--seed-color-fg-neutral-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+    }
+
+    .search-btn:hover {
+      background: var(--seed-color-bg-neutral-weak-pressed);
+      color: var(--seed-color-fg-neutral);
+    }
+
+    .search-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    /* Header Actions (SEED Action Button) */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      height: 40px;
+      padding: 0 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--seed-radius-r2);
+      border: none;
+      cursor: pointer;
+      transition: all var(--seed-duration-normal);
+      text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--seed-color-bg-brand-solid);
+      color: var(--seed-color-fg-on-brand-solid);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(255, 102, 0, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--seed-color-bg-brand-solid-pressed);
+    }
+
+    .btn-outline {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral);
+      border: 1px solid transparent;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--seed-color-bg-neutral-weak-pressed);
+    }
+
+    /* =========================================================
+       Main Content Container
+       ========================================================= */
+    .main-layout {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 4rem;
+    }
+
+    /* =========================================================
+       Category Navigation (SEED Chip Group)
+       ========================================================= */
+    .category-nav-wrapper {
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 0.35rem;
+    }
+
+    .category-nav-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-list {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+    }
+
+    .category-item button {
+      background-color: var(--seed-color-bg-layer-default);
+      color: var(--seed-color-fg-neutral-muted);
+      border: 1px solid var(--seed-color-stroke-neutral);
+      border-radius: var(--seed-radius-full);
+      height: 36px;
+      padding: 0 0.95rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--seed-duration-normal);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      user-select: none;
+    }
+
+    .category-item button:hover {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral);
+      border-color: var(--seed-color-stroke-neutral-muted);
+    }
+
+    .category-item button.active {
+      background-color: var(--seed-color-bg-neutral-solid);
+      color: var(--seed-color-fg-on-neutral-solid);
+      border-color: var(--seed-color-bg-neutral-solid);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(26, 28, 32, 0.18);
+    }
+
+    /* =========================================================
+       List Controls & Filter Bar
+       ========================================================= */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--seed-color-stroke-neutral-weak);
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .results-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      letter-spacing: -0.02em;
+    }
+
+    .item-count {
+      font-size: 0.85rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .item-count strong {
+      color: var(--seed-color-fg-neutral-muted);
+      background: var(--seed-color-bg-neutral-weak);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      padding: 0.15rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+      font-weight: 600;
+    }
+
+    .filter-options {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    /* SEED Switch for '거래 가능만 보기' */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-label {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--seed-color-fg-neutral-muted);
+      transition: color var(--seed-duration-normal);
+    }
+
+    .toggle-container input:checked ~ .toggle-label {
+      color: var(--seed-color-fg-neutral);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background-color: var(--seed-color-stroke-neutral);
+      border-radius: var(--seed-radius-full);
+      transition: all var(--seed-duration-normal);
+    }
+
+    .toggle-container input {
+      display: none;
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: transform var(--seed-duration-normal);
+    }
+
+    .toggle-container input:checked + .toggle-switch {
+      background-color: var(--seed-color-bg-brand-solid);
+    }
+
+    .toggle-container input:checked + .toggle-switch .toggle-knob {
+      transform: translateX(20px);
+    }
+
+    /* =========================================================
+       Product Grid & Card (SEED Card)
+       ========================================================= */
+    .product-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 600px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 900px) {
+      .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .product-card {
+      background: var(--seed-color-bg-layer-default);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+      border-radius: var(--seed-radius-r4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--seed-shadow-card);
+      transition: transform var(--seed-duration-normal), box-shadow var(--seed-duration-normal), border-color var(--seed-duration-normal);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--seed-shadow-card-hover);
+      border-color: var(--seed-color-stroke-neutral);
+    }
+
+    .product-card:active {
+      transform: scale(0.99);
+    }
+
+    .card-thumbnail-box {
+      position: relative;
+      width: 100%;
+      padding-top: 75%;
+      background-color: var(--seed-color-bg-neutral-weak);
+      overflow: hidden;
+    }
+
+    .card-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .product-card:hover .card-image {
+      transform: scale(1.04);
+    }
+
+    .product-card.status-sold .card-image {
+      filter: grayscale(80%) brightness(0.85);
+    }
+
+    /* SEED Badge */
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--seed-radius-r1);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      z-index: 2;
+    }
+
+    .badge-selling {
+      background-color: var(--seed-color-positive-bg);
+      color: var(--seed-color-positive);
+      border: 1px solid rgba(7, 145, 113, 0.2);
+    }
+
+    .badge-reserved {
+      background-color: var(--seed-color-warning-bg);
+      color: var(--seed-color-warning);
+      border: 1px solid rgba(155, 120, 33, 0.2);
+    }
+
+    .badge-sold {
+      background-color: var(--seed-color-bg-neutral-weak);
+      color: var(--seed-color-fg-neutral-muted);
+      border: 1px solid var(--seed-color-stroke-neutral-weak);
+    }
+
+    .card-category-tag {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(26, 28, 32, 0.65);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--seed-radius-r1);
+      font-weight: 500;
+    }
+
+    .card-content {
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--seed-color-fg-neutral);
+      line-height: 1.4;
+      margin-bottom: 0.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-height: 2.8em;
+      letter-spacing: -0.01em;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--seed-color-fg-neutral-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-meta .divider {
+      color: var(--seed-color-stroke-neutral);
+    }
+
+    .card-price-row {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--seed-color-stroke-neutral-weak);
+    }
+
+    .card-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      letter-spacing: -0.02em;
+    }
+
+    .card-price .currency {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .card-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--seed-color-fg-neutral-muted);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .stat-item svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4.5rem 1rem;
+      background: var(--seed-color-bg-layer-default);
+      border-radius: var(--seed-radius-r4);
+      border: 1px dashed var(--seed-color-stroke-neutral);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+
+    .empty-state h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--seed-color-fg-neutral);
+      margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+      color: var(--seed-color-fg-neutral-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Toast Notification */
+    .gamza-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--seed-color-bg-neutral-solid);
+      color: #ffffff;
+      padding: 0.75rem 1.35rem;
+      border-radius: var(--seed-radius-r2);
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: var(--seed-shadow-toast);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(30px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    .gamza-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Footer Component */
+    .gamza-footer {
+      background: var(--seed-color-bg-neutral-weak);
+      border-top: 1px solid var(--seed-color-stroke-neutral-weak);
+      padding: 2.5rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      color: var(--seed-color-fg-neutral-muted);
+      font-size: 0.85rem;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 800;
+      color: var(--seed-color-fg-brand);
+      font-size: 1.15rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--seed-color-fg-neutral-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--seed-color-fg-neutral);
+      text-decoration: underline;
+    }
+
+    /* Mobile Responsive Tweaks */
+    @media (max-width: 768px) {
+      .header-container {
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+      }
+      
+      .brand-logo .brand-badge {
+        display: none;
+      }
+
+      .search-wrapper {
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0.25rem;
+      }
+
+      .gamza-header .header-container {
+        flex-wrap: wrap;
+      }
+
+      .main-layout {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .btn {
+        padding: 0 0.85rem;
+        font-size: 0.85rem;
+      }
+
+      .btn-primary svg {
+        display: none;
+      }
+
+      .list-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .filter-options {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =======================================================
+       Header Component
+       ======================================================= -->
+  <header class="gamza-header" id="gamzaHeader">
+    <div class="header-container">
+      <!-- Logo -->
+      <a href="javascript:void(0)" class="brand-logo" onclick="GamzaProductList.resetFilters()">
+        <span class="potato-icon" aria-hidden="true">🥔</span>
+        <span class="brand-text">감자</span>
+        <span class="brand-badge">동네 장터</span>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="search-wrapper">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input-box" 
+          placeholder="포근한 물품이나 이웃의 감자를 찾아보세요" 
+          autocomplete="off"
+          onkeydown="if(event.key === 'Enter') GamzaProductList.triggerSearch()"
+        />
+        <button type="button" class="search-btn" onclick="GamzaProductList.triggerSearch()" aria-label="검색하기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <button type="button" class="btn btn-primary" onclick="GamzaProductList.openWriteModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>글쓰기</span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="GamzaProductList.openLoginModal()">
+          로그인
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =======================================================
+       Main Layout
+       ======================================================= -->
+  <main class="main-layout">
+    
+    <!-- Category Navigation -->
+    <nav class="category-nav-wrapper" aria-label="카테고리 탐색">
+      <ul class="category-list" id="categoryNav">
+        <!-- Rendered dynamically via JS -->
+      </ul>
+    </nav>
+
+    <!-- List Toolbar & Filters -->
+    <section class="list-toolbar">
+      <div class="results-meta">
+        <h1 class="section-title" id="currentCategoryTitle">전체 매물</h1>
+        <span class="item-count">총 <strong id="totalItemCount">0</strong>개</span>
+      </div>
+
+      <div class="filter-options">
+        <!-- '거래 가능만 보기' Toggle -->
+        <label class="toggle-container" for="availableOnlyToggle">
+          <input type="checkbox" id="availableOnlyToggle" onchange="GamzaProductList.toggleAvailableOnly(this.checked)">
+          <div class="toggle-switch">
+            <div class="toggle-knob"></div>
+          </div>
+          <span class="toggle-label">거래 가능만 보기</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="product-grid" id="productGrid" aria-live="polite">
+      <!-- Product Cards dynamically rendered here -->
+    </section>
+
+  </main>
+
+  <!-- =======================================================
+       Footer
+       ======================================================= -->
+  <footer class="gamza-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <span>🥔</span> 감자 마켓
+        </div>
+        <ul class="footer-links">
+          <li><a href="javascript:void(0)">이용약관</a></li>
+          <li><a href="javascript:void(0)">개인정보처리방침</a></li>
+          <li><a href="javascript:void(0)">위치기반서비스 이용약관</a></li>
+          <li><a href="javascript:void(0)">감자 고객센터</a></li>
+        </ul>
+      </div>
+      <p>© 2026 Gamza Market Inc. 따뜻하고 정이 넘치는 이웃 간의 중고거래 공간입니다.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification element -->
+  <div class="gamza-toast" id="gamzaToast" role="alert"></div>
+
+  <!-- =======================================================
+       Modular JavaScript
+       ======================================================= -->
+  <script>
+    /**
+     * 감자 마켓 - 상품 목록 모듈 (GamzaProductList)
+     * 다른 모듈 및 화면과 손쉽게 결합할 수 있도록 네임스페이스 기반으로 설계되었습니다.
+     */
+    const GamzaProductList = (function() {
+      // 1. 카테고리 정의
+      const CATEGORIES = [
+        { id: 'all', label: '전체', icon: '✨' },
+        { id: 'digital', label: '디지털기기', icon: '💻' },
+        { id: 'furniture', label: '가구/인테리어', icon: '🛋️' },
+        { id: 'clothing', label: '의류', icon: '🧥' },
+        { id: 'appliances', label: '생활가전', icon: '🔌' },
+        { id: 'books', label: '도서/티켓', icon: '📚' },
+        { id: 'etc', label: '기타', icon: '🥔' }
+      ];
+
+      // 2. 기본 샘플 데이터 (감자 테마 센스있는 상품명 포함 6종)
+      const INITIAL_PRODUCTS = [
+        {
+          id: 1,
+          title: "강원도 평창 직송 햇감자 10kg (포슬포슬 분나는 왕특품)",
+          category: "etc",
+          categoryName: "기타",
+          price: 18000,
+          status: "selling", // selling: 판매중, reserved: 예약중, sold: 거래 완료
+          location: "서초구 반포동",
+          uploadTime: "12분 전",
+          likes: 24,
+          chats: 9,
+          imageUrl: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: 2,
+          title: "닌텐도 스위치 OLED 풀박스 (포켓몬 바이올렛 팩 포함)",
+          category: "digital",
+          categoryName: "디지털기기",
+          price: 310000,
+          status: "selling",
+          location: "강남구 역삼동",
+          uploadTime: "45분 전",
+          likes: 42,
+          chats: 14,
+          imageUrl: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: 3,
+          title: "포근한 원목 감성 2단 협탁 (상태 S급, 이사 정리)",
+          category: "furniture",
+          categoryName: "가구/인테리어",
+          price: 42000,
+          status: "reserved",
+          location: "송파구 잠실동",
+          uploadTime: "2시간 전",
+          likes: 18,
+          chats: 5,
+          imageUrl: "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: 4,
+          title: "감자처럼 따뜻한 웜베이지 오버핏 숏패딩 (L사이즈, 실착 1회)",
+          category: "clothing",
+          categoryName: "의류",
+          price: 55000,
+          status: "selling",
+          location: "마포구 연남동",
+          uploadTime: "3시간 전",
+          likes: 31,
+          chats: 8,
+          imageUrl: "https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: 5,
+          title: "필립스 대용량 에어프라이어 (군감자·군고구마 굽기 최적)",
+          category: "appliances",
+          categoryName: "생활가전",
+          price: 35000,
+          status: "sold",
+          location: "성동구 성수동",
+          uploadTime: "1일 전",
+          likes: 15,
+          chats: 12,
+          imageUrl: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=600&q=80"
+        },
+        {
+          id: 6,
+          title: "[도서] 셰프가 알려주는 맛있는 감자 요리 100선 (거의 새책)",
+          category: "books",
+          categoryName: "도서/티켓",
+          price: 9000,
+          status: "selling",
+          location: "관악구 신림동",
+          uploadTime: "2일 전",
+          likes: 8,
+          chats: 2,
+          imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80"
+        }
+      ];
+
+      // 상태 관리 변수
+      let products = [...INITIAL_PRODUCTS];
+      let selectedCategory = 'all';
+      let searchQuery = '';
+      let isAvailableOnly = false;
+
+      // DOM 요소 캐시
+      let dom = {};
+
+      /**
+       * 초기화 메서드
+       */
+      function init() {
+        cacheDOM();
+        renderCategories();
+        renderProductList();
+      }
+
+      function cacheDOM() {
+        dom.categoryNav = document.getElementById('categoryNav');
+        dom.productGrid = document.getElementById('productGrid');
+        dom.totalItemCount = document.getElementById('totalItemCount');
+        dom.currentCategoryTitle = document.getElementById('currentCategoryTitle');
+        dom.searchInput = document.getElementById('searchInput');
+        dom.availableToggle = document.getElementById('availableOnlyToggle');
+        dom.toast = document.getElementById('gamzaToast');
+      }
+
+      /**
+       * 카테고리 네비게이션 렌더링
+       */
+      function renderCategories() {
+        if (!dom.categoryNav) return;
+        dom.categoryNav.innerHTML = CATEGORIES.map(cat => `
+          <li class="category-item">
+            <button 
+              type="button" 
+              class="${cat.id === selectedCategory ? 'active' : ''}" 
+              onclick="GamzaProductList.selectCategory('${cat.id}')"
+              data-cat-id="${cat.id}"
+            >
+              <span>${cat.icon}</span>
+              <span>${cat.label}</span>
+            </button>
+          </li>
+        `).join('');
+      }
+
+      /**
+       * 상품 상태별 뱃지 HTML 생성
+       */
+      function getStatusBadge(status) {
+        switch (status) {
+          case 'selling':
+            return `<span class="card-badge badge-selling">판매중</span>`;
+          case 'reserved':
+            return `<span class="card-badge badge-reserved">예약중</span>`;
+          case 'sold':
+            return `<span class="card-badge badge-sold">거래 완료</span>`;
+          default:
+            return '';
+        }
+      }
+
+      /**
+       * 가격 포맷 (원 단위 콤마)
+       */
+      function formatPrice(price) {
+        if (price === 0) return '무료나눔';
+        return price.toLocaleString('ko-KR') + '<span class="currency">원</span>';
+      }
+
+      /**
+       * 필터링된 상품 목록 반환
+       */
+      function getFilteredProducts() {
+        return products.filter(item => {
+          // 1. 카테고리 필터
+          if (selectedCategory !== 'all' && item.category !== selectedCategory) {
+            return false;
+          }
+
+          // 2. 검색어 필터
+          if (searchQuery.trim() !== '') {
+            const query = searchQuery.trim().toLowerCase();
+            const titleMatch = item.title.toLowerCase().includes(query);
+            const categoryMatch = item.categoryName.toLowerCase().includes(query);
+            const locationMatch = item.location.toLowerCase().includes(query);
+            if (!titleMatch && !categoryMatch && !locationMatch) {
+              return false;
+            }
+          }
+
+          // 3. 거래 가능만 보기 필터 (판매중, 예약중만 포함)
+          if (isAvailableOnly) {
+            if (item.status === 'sold') {
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
+
+      /**
+       * 상품 그리드 렌더링
+       */
+      function renderProductList() {
+        const filtered = getFilteredProducts();
+
+        // 총 개수 및 제목 업데이트
+        if (dom.totalItemCount) {
+          dom.totalItemCount.textContent = filtered.length;
+        }
+
+        if (dom.currentCategoryTitle) {
+          const currentCatObj = CATEGORIES.find(c => c.id === selectedCategory);
+          const catName = currentCatObj ? currentCatObj.label : '전체';
+          dom.currentCategoryTitle.textContent = searchQuery.trim() 
+            ? `'${searchQuery}' 검색 결과`
+            : (selectedCategory === 'all' ? '전체 매물' : `${catName} 매물`);
+        }
+
+        if (!dom.productGrid) return;
+
+        // 결과 없을 때 빈 화면
+        if (filtered.length === 0) {
+          dom.productGrid.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">🥔💨</div>
+              <h3>해당하는 감자 상품이 없어요!</h3>
+              <p>검색어를 변경하거나 필터를 초기화해 보세요.</p>
+              <button type="button" class="btn btn-outline" onclick="GamzaProductList.resetFilters()">
+                전체 상품 보러가기
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        // 상품 카드 렌더링
+        dom.productGrid.innerHTML = filtered.map(item => `
+          <article 
+            class="product-card status-${item.status}" 
+            onclick="GamzaProductList.onCardClick(${item.id})"
+            tabindex="0"
+            role="button"
+            aria-label="${item.title}"
+            onkeydown="if(event.key==='Enter') GamzaProductList.onCardClick(${item.id})"
+          >
+            <div class="card-thumbnail-box">
+              <img 
+                src="${item.imageUrl}" 
+                alt="${item.title}" 
+                class="card-image"
+                loading="lazy"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80';"
+              />
+              ${getStatusBadge(item.status)}
+              <span class="card-category-tag">${item.categoryName}</span>
+            </div>
+            
+            <div class="card-content">
+              <h2 class="card-title" title="${item.title}">${item.title}</h2>
+              
+              <div class="card-meta">
+                <span>${item.location}</span>
+                <span class="divider">·</span>
+                <span>${item.uploadTime}</span>
+              </div>
+              
+              <div class="card-price-row">
+                <div class="card-price">
+                  ${formatPrice(item.price)}
+                </div>
+                <div class="card-stats">
+                  <span class="stat-item" title="관심">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    ${item.likes}
+                  </span>
+                  <span class="stat-item" title="채팅">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    ${item.chats}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      /**
+       * 카테고리 선택 액션
+       */
+      function selectCategory(catId) {
+        selectedCategory = catId;
+        renderCategories();
+        renderProductList();
+      }
+
+      /**
+       * 거래 가능만 보기 토글 액션
+       */
+      function toggleAvailableOnly(checked) {
+        isAvailableOnly = checked;
+        renderProductList();
+        showToast(checked ? "🌱 거래 가능한 상품만 모아봅니다" : "전체 상태의 상품을 표시합니다");
+      }
+
+      /**
+       * 검색 트리거
+       */
+      function triggerSearch() {
+        if (!dom.searchInput) return;
+        searchQuery = dom.searchInput.value;
+        renderProductList();
+        if (searchQuery.trim()) {
+          showToast(`🔍 '${searchQuery}' 검색 결과입니다`);
+        }
+      }
+
+      /**
+       * 필터 초기화
+       */
+      function resetFilters() {
+        selectedCategory = 'all';
+        searchQuery = '';
+        isAvailableOnly = false;
+        if (dom.searchInput) dom.searchInput.value = '';
+        if (dom.availableToggle) dom.availableToggle.checked = false;
+        renderCategories();
+        renderProductList();
+        showToast("🥔 전체 목록으로 돌아왔습니다");
+      }
+
+      /**
+       * 글쓰기 버튼 클릭 이벤트
+       */
+      function openWriteModal() {
+        showToast("✍️ [글쓰기] 화면으로 연결될 예정입니다!");
+      }
+
+      /**
+       * 로그인 버튼 클릭 이벤트
+       */
+      function openLoginModal() {
+        showToast("🔒 [로그인] 창이 곧 준비될 예정입니다!");
+      }
+
+      /**
+       * 카드 클릭 이벤트
+       */
+      function onCardClick(productId) {
+        const item = products.find(p => p.id === productId);
+        if (item) {
+          showToast(`📦 '${item.title.substring(0, 16)}...' 상세 화면으로 이동합니다`);
+        }
+      }
+
+      /**
+       * 토스트 알림 표시
+       */
+      let toastTimeout = null;
+      function showToast(message) {
+        if (!dom.toast) return;
+        dom.toast.innerHTML = message;
+        dom.toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          dom.toast.classList.remove('show');
+        }, 2200);
+      }
+
+      // 외부 노출 API (다른 화면 및 컴포넌트와의 결합을 위한 인터페이스)
+      return {
+        init,
+        selectCategory,
+        toggleAvailableOnly,
+        triggerSearch,
+        resetFilters,
+        openWriteModal,
+        openLoginModal,
+        onCardClick,
+        setProducts: function(newProducts) {
+          products = [...newProducts];
+          renderProductList();
+        },
+        getProducts: function() {
+          return products;
+        }
+      };
+    })();
+
+    // DOM 로드 완료 시 자동 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      GamzaProductList.init();
+    });
+  </script>
+</body>
+</html>
